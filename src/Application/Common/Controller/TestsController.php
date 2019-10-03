@@ -3,6 +3,9 @@
 namespace App\Application\Common\Controller;
 
 
+use App\Api\BetaseriesApi\BetaseriesLoger;
+use App\Application\Helpers\OAuth2ClientProvider\Oauth2Betaseries;
+use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,13 +27,26 @@ class TestsController extends BaseController
 
     /**
      * @Route("/", name="home.index")
+     * @param BetaseriesLoger $logger
      * @return Response
      */
-    public function index(): Response
+    public function index(BetaseriesLoger $logger): Response
     {
-        return $this->render('test/home.html.twig', [
-            'yes' => $this->yes,
-            'cool' => $this->cool,
-        ]);
+        $token = $logger->login();
+
+        try {
+            return $this->redirectToRoute('home.executerequest', ['token' => $token]);
+        } catch (\Exception $e) {
+            exit('Oh mince...');
+        }
+
+    }
+
+    /**
+     * @Route("/{token}", name="home.executerequest")
+     */
+    public function executeRequest($token)
+    {
+        dd($token);
     }
 }
