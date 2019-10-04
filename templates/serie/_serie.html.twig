@@ -1,0 +1,13 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="">
+                {{ serie.original_title }}
+            </a>
+        </h5>
+        <img src="{{ serie.images.show }}" alt="card-img-top" style="width: 100%; height:auto;">
+        <p class="card-text">{{ serie.description }})</p>
+        <div class="text-primary">Nombre de saisons: {{ serie.seasons }}</div>
+        <div class="text-primary">Nombre dépisodes: {{ serie.episodes }}</div>
+    </div>
+</div>

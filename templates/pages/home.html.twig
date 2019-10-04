@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="jumbotron text-center">
+        <h1>Les séries les plus populaires</h1>
+    </div>
+    <div class="container">
+        <div class="flex row">
+            {% for serie in  series %}
+                <div class="col-3">
+                    {% include 'serie/_serie.html.twig' %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

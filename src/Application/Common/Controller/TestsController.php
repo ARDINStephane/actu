@@ -24,30 +24,14 @@ class TestsController extends BaseController
     protected $cool = "Cool on va bien s'amuser";
 
     /**
-     * @Route("/", name="home.index")
-     * @param BetaseriesLoger $logger
+     * @Route("/test", name="test.index")
      * @return Response
-     * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      */
-    public function index(BetaseriesLoger $logger): Response
+    public function index(): Response
     {
-        $logger->login();
-
-        try {
-            return $this->redirectToRoute('home.executerequest');
-        } catch (\Exception $e) {
-            exit('Oh mince...');
-        }
-
-    }
-
-    /**
-     * @Route("/request", name="home.executerequest")
-     * @param TokenManager $tokenManager
-     */
-    public function executeRequest(TokenManager $tokenManager)
-    {
-        $token = $tokenManager->get();
-        dd($token);
+        return $this->render('test/test.html.twig',[
+            'yes' =>$this->yes,
+            'cool' => $this->cool
+        ]);
     }
 }
