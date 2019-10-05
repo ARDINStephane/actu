@@ -37,10 +37,21 @@ class SeriesProvider
     {
         $clientId = $this->params->get('clientId');
         $client = new CurlHttpClient();
-        $response = $client->request('GET', 'https://api.betaseries.com/shows/list?v=3.0&order=popularity&limit=120&v=3.0&key=' . $clientId);
+        $response = $client->request('GET', 'https://api.betaseries.com/shows/list?&order=popularity&limit=120&v=3.0&key=' . $clientId);
 
         $series = json_decode($response->getContent(), true);
 
         return $series['shows'];
+    }
+
+    public function provideSerieBy(string $id): array
+    {
+        $clientId = $this->params->get('clientId');
+        $client = new CurlHttpClient();
+        $response = $client->request('GET', 'https://api.betaseries.com/shows/display?id=' .$id .'&v=3.0&key=' . $clientId);
+
+        $serie = json_decode($response->getContent(), true);
+
+        return $serie['show'];
     }
 }
