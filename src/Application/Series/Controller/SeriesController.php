@@ -5,6 +5,8 @@ namespace App\Application\Series\Controller;
 
 use App\Api\BetaseriesApi\Provider\SeriesProvider;
 use App\Application\Common\Controller\BaseController;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -33,9 +35,13 @@ class SeriesController extends BaseController
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function index(): Response
+    public function index(PaginatorInterface $paginator, Request $request): Response
     {
-        $series = $this->seriesProvider->provideMostPopularSeries();
+        $series = $paginator->paginate(
+            $this->seriesProvider->provideMostPopularSeries(),
+            $request->query->getInt('page', 1),
+            12
+        );
 
         return $this->render('pages/home.html.twig', [
             'series' => $series

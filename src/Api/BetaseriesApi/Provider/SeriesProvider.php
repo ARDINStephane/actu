@@ -37,7 +37,7 @@ class SeriesProvider
     {
         $clientId = $this->params->get('clientId');
         $client = new CurlHttpClient();
-        $response = $client->request('GET', 'https://api.betaseries.com/shows/list?v=3.0&order=popularity&limit=12&v=3.0&key=' . $clientId);
+        $response = $client->request('GET', 'https://api.betaseries.com/shows/list?v=3.0&order=popularity&limit=120&v=3.0&key=' . $clientId);
 
         $series = json_decode($response->getContent(), true);
 
