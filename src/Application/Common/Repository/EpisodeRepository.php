@@ -6,5 +6,5 @@ namespace App\Application\Common\Repository;
  * Interface SerieRepository
  * @package App\Application\Common\Repository
  */
-interface SerieRepository extends BaseRepository
+interface EpisodeRepository extends BaseRepository
 {}

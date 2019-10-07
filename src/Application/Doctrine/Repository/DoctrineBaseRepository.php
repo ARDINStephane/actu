@@ -87,4 +87,17 @@ abstract class DoctrineBaseRepository extends ServiceEntityRepository implements
         $class = $this->getClass();
         return new $class(...$args);
     }
+
+    /**
+     * @param int $id
+     */
+    public function delete(int $id): void
+    {
+        $this->createQueryBuilder()
+            ->delete($this->class,'o')
+            ->where('o.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
 }

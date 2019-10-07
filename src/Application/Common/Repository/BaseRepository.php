@@ -37,4 +37,9 @@ interface BaseRepository
      * @return mixed
      */
     public function new(...$args);
+
+    /**
+     * @param int $id
+     */
+    public function delete(int $id): void;
 }

@@ -3,13 +3,13 @@
 namespace App\Application\Doctrine\Repository;
 
 use App\Application\Common\Repository\SerieRepository;
-use App\Application\Doctrine\Entity\DoctrineSerie;
+use App\Application\Doctrine\Entity\DoctrineEpisode;
 
 /**
  * Class DoctrineSerieRepository
  * @package App\Application\Doctrine\Repository
  */
-class DoctrineSerieRepository extends DoctrineBaseRepository implements SerieRepository
+class DoctrineEpisodeRepository extends DoctrineBaseRepository implements SerieRepository
 {
-    protected $class = DoctrineSerie::class;
+    protected $class = DoctrineEpisode::class;
 }
