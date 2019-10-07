@@ -3,6 +3,7 @@
 namespace App\Application\Series\DTO;
 
 
+use Cocur\Slugify\Slugify;
 use Symfony\Component\Routing\RouterInterface;
 
 class SerieDTOByApiBuilder
@@ -26,6 +27,7 @@ class SerieDTOByApiBuilder
     {
         $id = $serie['id'];
         $title= $serie['original_title'];
+        $slug = $this->slugify($title);
         $alias= $serie['aliases'];
         $images= $serie['images'];
         $year= $serie['creation'];
@@ -44,6 +46,7 @@ class SerieDTOByApiBuilder
         return new SerieCardDTO(
             $id,
             $title,
+            $slug,
             $alias,
             $images,
             $year,
@@ -75,5 +78,16 @@ class SerieDTOByApiBuilder
         }
 
         return $lastEpisode = 'S' . $lastSeason['number'] . ' E' . $lastSeason['episodes'];
+    }
+
+    /**
+     * @param string $title
+     * @return string
+     */
+    protected function slugify(string $title): string
+    {
+        $slugify = new Slugify();
+
+        return $slugify->slugify($title);
     }
 }

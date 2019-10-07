@@ -13,7 +13,10 @@ class SerieCardDTO
      * @var string|null
      */
     private $title;
-
+    /**
+     * @var string
+     */
+    private $slug;
     /**
      * @var array|null
      */
@@ -70,6 +73,7 @@ class SerieCardDTO
     public function __construct(
         ?string $id,
         ?string $title,
+        string $slug,
         ?array $alias,
         ?array $images,
         ?string $year,
@@ -86,6 +90,7 @@ class SerieCardDTO
     ) {
         $this->id = $id;
         $this->title = $title;
+        $this->slug = $slug;
         $this->alias = $alias;
         $this->images = $images;
         $this->year = $year;
@@ -163,6 +168,24 @@ class SerieCardDTO
     public function getAlias(): ?array
     {
         return $this->alias;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     * @return SerieCardDTO
+     */
+    public function setSlug(string $slug): SerieCardDTO
+    {
+        $this->slug = $slug;
+        return $this;
     }
 
     /**
