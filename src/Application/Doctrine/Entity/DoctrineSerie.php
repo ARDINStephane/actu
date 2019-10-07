@@ -1,12 +1,25 @@
 <?php
 
-namespace App\Application\Series\DTO;
+namespace App\Application\Doctrine\Entity;
 
+use App\Application\Common\Entity\Serie;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-class SerieCardDTO
+/**
+ * Class Serie
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\SerieRepository")
+ * @UniqueEntity("slug")
+ * @package App\Application\Doctrine\Entity
+ */
+class DoctrineSerie implements Serie
 {
     /**
-     * @var string|null
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(type="string")
      */
     private $id;
     /**
@@ -48,7 +61,7 @@ class SerieCardDTO
     /**
      * @var string|null
      */
-    private $numberOfepisodes;
+    private $episodes;
     /**
      * @var string|null
      */
@@ -69,61 +82,27 @@ class SerieCardDTO
      * @var string|null
      */
     private $serieShow;
+    /**
+     * @ORM\Column(type="boolean", options={"default":false})
+     */
+    private $seen = false;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
 
-    public function __construct(
-        ?string $id,
-        ?string $title,
-        string $slug,
-        ?array $alias,
-        ?array $images,
-        ?string $year,
-        ?string $origin,
-        ?array $genre,
-        ?string $numberOfSeasons,
-        ?array $seasonsDetails,
-        ?string $numberOfepisodes,
-        ?string $lastEpisode,
-        ?string $description,
-        ?array $note,
-        ?string $status,
-        ?string $serieShow
-    ) {
-        $this->id = $id;
-        $this->title = $title;
-        $this->slug = $slug;
-        $this->alias = $alias;
-        $this->images = $images;
-        $this->year = $year;
-        $this->origin = $origin;
-        $this->genre = $genre;
-        $this->numberOfSeasons = $numberOfSeasons;
-        $this->seasonsDetails = $seasonsDetails;
-        $this->numberOfepisodes = $numberOfepisodes;
-        $this->lastEpisode = $lastEpisode;
-        $this->description = $description;
-        $this->note = $note;
-        $this->status = $status;
-        $this->serieShow = $serieShow;
-    }
+    /**
+     * @ManyToOne(targetEntity="Seasons", cascade={"all"}, fetch="EAGER")
+     */
+    private $seasons;
 
-    public function toArray(): array
+    public function __construct()
     {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'alias' => $this->alias,
-            'images' => $this->images,
-            'year' => $this->year,
-            'origin' => $this->origin,
-            'genre' => $this->genre,
-            'numberOfSeasons' => $this->numberOfSeasons,
-            'numberOfnumberOfepisodes' => $this->numberOfepisodes,
-            'lastEpisode' => $this->lastEpisode,
-            'description' => $this->description,
-            'note' => $this->note,
-            'status' => $this->status,
-            'serieShow' => $this->serieShow,
-        ];
+        $this->seasons = new ArrayCollection();
     }
 
     /**
@@ -136,9 +115,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $id
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setId(?string $id): SerieCardDTO
+    public function setId(?string $id): Serie
     {
         $this->id = $id;
         return $this;
@@ -154,9 +133,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $title
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setTitle(?string $title): SerieCardDTO
+    public function setTitle(?string $title): Serie
     {
         $this->title = $title;
         return $this;
@@ -180,9 +159,9 @@ class SerieCardDTO
 
     /**
      * @param string $slug
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setSlug(string $slug): SerieCardDTO
+    public function setSlug(string $slug): Serie
     {
         $this->slug = $slug;
         return $this;
@@ -190,9 +169,9 @@ class SerieCardDTO
 
     /**
      * @param array|null $alias
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setAlias(?array $alias): SerieCardDTO
+    public function setAlias(?array $alias): Serie
     {
         $this->alias = $alias;
         return $this;
@@ -208,9 +187,9 @@ class SerieCardDTO
 
     /**
      * @param array|null $images
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setImages(?array $images): SerieCardDTO
+    public function setImages(?array $images): Serie
     {
         $this->images = $images;
         return $this;
@@ -226,9 +205,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $year
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setYear(?string $year): SerieCardDTO
+    public function setYear(?string $year): Serie
     {
         $this->year = $year;
         return $this;
@@ -244,9 +223,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $origin
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setOrigin(?string $origin): SerieCardDTO
+    public function setOrigin(?string $origin): Serie
     {
         $this->origin = $origin;
         return $this;
@@ -262,9 +241,9 @@ class SerieCardDTO
 
     /**
      * @param array|null $genre
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setGenre(?array $genre): SerieCardDTO
+    public function setGenre(?array $genre): Serie
     {
         $this->genre = $genre;
         return $this;
@@ -280,7 +259,7 @@ class SerieCardDTO
 
     /**
      * @param string|null $numberOfSeasons
-     * @return SerieCardDTO
+     * @return Serie
      */
     public function setNumberOfSeasons(?string $numberOfSeasons): SerieCardDTO
     {
@@ -298,9 +277,9 @@ class SerieCardDTO
 
     /**
      * @param array|null $seasonsDetails
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setSeasonsDetails(?array $seasonsDetails): SerieCardDTO
+    public function setSeasonsDetails(?array $seasonsDetails): Serie
     {
         $this->seasonsDetails = $seasonsDetails;
         return $this;
@@ -309,18 +288,18 @@ class SerieCardDTO
     /**
      * @return string|null
      */
-    public function getNumberOfEpisodes(): ?string
+    public function getEpisodes(): ?string
     {
-        return $this->numberOfepisodes;
+        return $this->episodes;
     }
 
     /**
-     * @param string|null $numberOfepisodes
-     * @return SerieCardDTO
+     * @param string|null $episodes
+     * @return Serie
      */
-    public function setNumberOfEpisodes(?string $numberOfepisodes): SerieCardDTO
+    public function setEpisodes(?string $episodes): Serie
     {
-        $this->numberOfepisodes = $numberOfepisodes;
+        $this->episodes = $episodes;
         return $this;
     }
 
@@ -334,9 +313,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $lastEpisode
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setLastEpisode(?string $lastEpisode): SerieCardDTO
+    public function setLastEpisode(?string $lastEpisode): Serie
     {
         $this->lastEpisode = $lastEpisode;
         return $this;
@@ -352,9 +331,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $description
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setDescription(?string $description): SerieCardDTO
+    public function setDescription(?string $description): Serie
     {
         $this->description = $description;
         return $this;
@@ -370,9 +349,9 @@ class SerieCardDTO
 
     /**
      * @param array|null $note
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setNote(?array $note): SerieCardDTO
+    public function setNote(?array $note): Serie
     {
         $this->note = $note;
         return $this;
@@ -388,9 +367,9 @@ class SerieCardDTO
 
     /**
      * @param string|null $status
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setStatus(?string $status): SerieCardDTO
+    public function setStatus(?string $status): Serie
     {
         $this->status = $status;
         return $this;
@@ -406,11 +385,99 @@ class SerieCardDTO
 
     /**
      * @param string|null $serieShow
-     * @return SerieCardDTO
+     * @return Serie
      */
-    public function setSerieShow(?string $serieShow): SerieCardDTO
+    public function setSerieShow(?string $serieShow): Serie
     {
         $this->serieShow = $serieShow;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedAt(): \DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param mixed $updatedAt
+     * @return Serie
+     */
+    public function setUpdatedAt($updatedAt): Serie
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(): \DateTime
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param mixed $createdAt
+     * @return Serie
+     */
+    public function setCreatedAt($createdAt): serie
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    /**
+     * @return @var bool
+     */
+    public function getSeen(): bool
+    {
+        return $this->seen;
+    }
+
+    /**
+     * @param mixed $seen
+     * @return Serie
+     */
+    public function setSeen($seen): Serie
+    {
+        $this->seen = $seen;
+        return $this;
+    }
+
+    /**
+     * @return Collection|Season[]
+     */
+    public function getSeasons(): Collection
+    {
+        return $this->seasons;
+    }
+
+    /**
+     * @param Season $season
+     * @return Serie
+     */
+    public function addSeasons(Season $season): Serie
+    {
+        if (!$this->seasons->contains($season)) {
+            $this->seasons[] = $season;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Season $season
+     * @return Serie
+     */
+    public function removeSeasons(Season $season): Serie
+    {
+        if ($this->seasons->contains($season)) {
+            $this->seasons->removeElement($season);
+        }
+
         return $this;
     }
 }

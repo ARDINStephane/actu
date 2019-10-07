@@ -33,7 +33,7 @@ class SerieDTOByApiBuilder
         $year= $serie['creation'];
         $origin= $serie['language'];
         $genre= $serie['genres'];
-        $seasons= $serie['seasons'];
+        $numberOfSeasons= $serie['seasons'];
         $seasonsDetails= $serie['seasons_details'];
         $episodes= $serie['episodes'];
         $lastEpisode= $this->getLastEpisode($seasonsDetails);
@@ -52,7 +52,7 @@ class SerieDTOByApiBuilder
             $year,
             $origin,
             $genre,
-            $seasons,
+            $numberOfSeasons,
             $seasonsDetails,
             $episodes,
             $lastEpisode,
