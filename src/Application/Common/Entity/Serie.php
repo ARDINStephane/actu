@@ -109,13 +109,13 @@ interface Serie
     /**
      * @return string|null
      */
-    public function getEpisodes(): ?string;
+    public function getNumberOfEpisodes(): ?string;
 
     /**
-     * @param string|null $episodes
+     * @param string|null $numberOfEpisodes
      * @return Serie
      */
-    public function setEpisodes(?string $episodes): Serie;
+    public function setNumberOfEpisodes(?string $numberOfEpisodes): Serie;
 
     /**
      * @return string|null
@@ -229,4 +229,21 @@ interface Serie
      * @return Serie
      */
     public function removeSeasons(Season $season): Serie;
+
+    /**
+     * @return Collection|Episode[]
+     */
+    public function getEpisodes(): Collection;
+
+    /**
+     * @param Episode $episode
+     * @return Serie
+     */
+    public function addEpisodes(Episode $episode): Serie;
+
+    /**
+     * @param Episode $episode
+     * @return Serie
+     */
+    public function removeEpisodes(Episode $episode): Serie;
 }

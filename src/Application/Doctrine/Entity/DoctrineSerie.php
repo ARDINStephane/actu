@@ -2,14 +2,16 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use App\Application\Common\Entity\Episode;
+use App\Application\Common\Entity\Season;
 use App\Application\Common\Entity\Serie;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Class Serie
+ * Class DoctrineSerie
  * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\SerieRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
@@ -61,7 +63,7 @@ class DoctrineSerie implements Serie
     /**
      * @var string|null
      */
-    private $episodes;
+    private $numberOfEpisodes;
     /**
      * @var string|null
      */
@@ -96,13 +98,19 @@ class DoctrineSerie implements Serie
     private $createdAt;
 
     /**
-     * @ManyToOne(targetEntity="Seasons", cascade={"all"}, fetch="EAGER")
+     * @OneToMany(targetEntity="DoctrineSeason", mappedBy="serie", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
      */
     private $seasons;
+
+    /**
+     * @OneToMany(targetEntity="DoctrineEpisode", mappedBy="serie", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     */
+    private $episodes;
 
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
+        $this->episodes = new ArrayCollection();
     }
 
     /**
@@ -288,18 +296,18 @@ class DoctrineSerie implements Serie
     /**
      * @return string|null
      */
-    public function getEpisodes(): ?string
+    public function getNumberOfEpisodes(): ?string
     {
-        return $this->episodes;
+        return $this->numberOfEpisodes;
     }
 
     /**
-     * @param string|null $episodes
+     * @param string|null $numberOfEpisodes
      * @return Serie
      */
-    public function setEpisodes(?string $episodes): Serie
+    public function setNumberOfEpisodes(?string $numberOfEpisodes): Serie
     {
-        $this->episodes = $episodes;
+        $this->numberOfEpisodes = $numberOfEpisodes;
         return $this;
     }
 
@@ -476,6 +484,40 @@ class DoctrineSerie implements Serie
     {
         if ($this->seasons->contains($season)) {
             $this->seasons->removeElement($season);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Episode[]
+     */
+    public function getEpisodes(): Collection
+    {
+        return $this->episodes;
+    }
+
+    /**
+     * @param Episode $episode
+     * @return Serie
+     */
+    public function addEpisodes(Episode $episode): Serie
+    {
+        if (!$this->episodes->contains($episode)) {
+            $this->episodes[] = $episode;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Episode $episode
+     * @return Serie
+     */
+    public function removeEpisodes(Episode $episode): Serie
+    {
+        if ($this->episodes->contains($episode)) {
+            $this->episodes->removeElement($episode);
         }
 
         return $this;

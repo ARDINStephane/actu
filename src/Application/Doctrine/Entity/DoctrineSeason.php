@@ -4,17 +4,21 @@ namespace App\Application\Doctrine\Entity;
 
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
-use App\Application\Common\Entity\Serie;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Class DoctrineEpisode
+ * Class SDoctrineeason
  * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\EpisodeRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */
-class DoctrineEpisode implements Episode
+class DoctrineSeason implements Season
 {
     /**
      * @ORM\Id
@@ -25,11 +29,7 @@ class DoctrineEpisode implements Episode
     /**
      * @var string|null
      */
-    private $title;
-    /**
-     * @var string
-     */
-    private $slug;
+    private $number;
     /**
      * @var array|null
      */
@@ -49,7 +49,7 @@ class DoctrineEpisode implements Episode
     /**
      * @var string|null
      */
-    private $episodeShow;
+    private $seasonShow;
     /**
      * @ORM\Column(type="boolean", options={"default":false})
      */
@@ -64,26 +64,38 @@ class DoctrineEpisode implements Episode
     private $createdAt;
 
     /**
-     * @ManyToOne(targetEntity="DoctrineSeason", cascade={"all"}, fetch="EAGER")
-     */
-    private $season;
-
-    /**
      * @ManyToOne(targetEntity="DoctrineSerie", cascade={"all"}, fetch="EAGER")
      */
     private $serie;
 
     /**
-     * @return string
+     * @OneToMany(targetEntity="DoctrineEpisode", mappedBy="season", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
      */
-    public function getId(): string
+    private $episodes;
+
+    /**
+     * @OneToOne(targetEntity="DoctrineEpisode", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @JoinColumn(name="customer_id", referencedColumnName="id")
+     */
+    private $lastEpisodeSeen;
+
+
+    public function __construct()
+    {
+        $this->episodes = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
     {
         return $this->id;
     }
 
     /**
-     * @param string $id
-     * @return Episode
+     * @param mixed $id
+     * @return Season
      */
     public function setId($id)
     {
@@ -94,36 +106,18 @@ class DoctrineEpisode implements Episode
     /**
      * @return string|null
      */
-    public function getTitle(): ?string
+    public function getNumber(): ?string
     {
-        return $this->title;
+        return $this->number;
     }
 
     /**
-     * @param string|null $title
-     * @return Episode
+     * @param string|null $number
+     * @return Season
      */
-    public function setTitle(?string $title): Episode
+    public function setNumber(?string $number): Season
     {
-        $this->title = $title;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-    /**
-     * @param string $slug
-     * @return Episode
-     */
-    public function setSlug(string $slug): Episode
-    {
-        $this->slug = $slug;
+        $this->number = $number;
         return $this;
     }
 
@@ -137,9 +131,9 @@ class DoctrineEpisode implements Episode
 
     /**
      * @param array|null $images
-     * @return Episode
+     * @return Season
      */
-    public function setImages(?array $images): Episode
+    public function setImages(?array $images): Season
     {
         $this->images = $images;
         return $this;
@@ -155,9 +149,9 @@ class DoctrineEpisode implements Episode
 
     /**
      * @param string|null $year
-     * @return Episode
+     * @return Season
      */
-    public function setYear(?string $year): Episode
+    public function setYear(?string $year): Season
     {
         $this->year = $year;
         return $this;
@@ -173,9 +167,9 @@ class DoctrineEpisode implements Episode
 
     /**
      * @param string|null $description
-     * @return Episode
+     * @return Season
      */
-    public function setDescription(?string $description): Episode
+    public function setDescription(?string $description): Season
     {
         $this->description = $description;
         return $this;
@@ -191,9 +185,9 @@ class DoctrineEpisode implements Episode
 
     /**
      * @param array|null $note
-     * @return Episode
+     * @return Season
      */
-    public function setNote(?array $note): Episode
+    public function setNote(?array $note): Season
     {
         $this->note = $note;
         return $this;
@@ -202,18 +196,18 @@ class DoctrineEpisode implements Episode
     /**
      * @return string|null
      */
-    public function getEpisodeShow(): ?string
+    public function getSeasonShow(): ?string
     {
-        return $this->episodeShow;
+        return $this->seasonShow;
     }
 
     /**
-     * @param string|null $episodeShow
-     * @return Episode
+     * @param string|null $seasonShow
+     * @return Season
      */
-    public function setEpisodeShow(?string $episodeShow): Episode
+    public function setSeasonShow(?string $seasonShow): Season
     {
-        $this->episodeShow = $episodeShow;
+        $this->seasonShow = $seasonShow;
         return $this;
     }
 
@@ -226,10 +220,10 @@ class DoctrineEpisode implements Episode
     }
 
     /**
-     * @param bool $seen
-     * @return Episode
+     * @param \bool $seen
+     * @return Season
      */
-    public function setSeen(bool $seen): Episode
+    public function setSeen(bool $seen): Season
     {
         $this->seen = $seen;
         return $this;
@@ -244,10 +238,10 @@ class DoctrineEpisode implements Episode
     }
 
     /**
-     * @param mixed $updatedAt
-     * @return Episode
+     * @param \DateTime $updatedAt
+     * @return Season
      */
-    public function setUpdatedAt($updatedAt): Episode
+    public function setUpdatedAt($updatedAt): Season
     {
         $this->updatedAt = $updatedAt;
         return $this;
@@ -263,47 +257,82 @@ class DoctrineEpisode implements Episode
 
     /**
      * @param mixed $createdAt
-     * @return Episode
+     * @return Season
      */
-    public function setCreatedAt($createdAt): Episode
+    public function setCreatedAt($createdAt): Season
     {
         $this->createdAt = $createdAt;
         return $this;
     }
 
     /**
-     * @return Season
+     * @return mixed
      */
-    public function getSeason(): Season
-    {
-        return $this->season;
-    }
-
-    /**
-     * @param Season $season
-     * @return Episode
-     */
-    public function setSeason(Season $season): Episode
-    {
-        $this->season = $season;
-        return $this;
-    }
-
-    /**
-     * @return Serie
-     */
-    public function getSerie(): Serie
+    public function getSerie()
     {
         return $this->serie;
     }
 
     /**
-     * @param Serie $serie
-     * @return Episode
+     * @param mixed $serie
+     * @return Season
      */
-    public function setSerie(Serie $serie): Episode
+    public function setSerie($serie):Season
     {
         $this->serie = $serie;
+        return $this;
+    }
+
+    /**
+     * @return Collection|Episode[];
+     */
+    public function getEpisodes(): Collection
+    {
+        return $this->episodes;
+    }
+
+
+    /**
+     * @param Episode $episode
+     * @return Season
+     */
+    public function addEpisodes(Episode $episode): Season
+    {
+        if (!$this->episodes->contains($episode)) {
+            $this->episodes[] = $episode;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Episode $episode
+     * @return Season
+     */
+    public function removeEpisodes(Episode $episode): Season
+    {
+        if ($this->episodes->contains($episode)) {
+            $this->episodes->removeElement($episode);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Episode
+     */
+    public function getLastEpisodeSeen(): Episode
+    {
+        return $this->lastEpisodeSeen;
+    }
+
+    /**
+     * @param Episode $lastEpisodeSeen
+     * @return DoctrineSeason
+     */
+    public function setLastEpisodeSeen(Episode $lastEpisodeSeen)
+    {
+        $this->lastEpisodeSeen = $lastEpisodeSeen;
         return $this;
     }
 }
