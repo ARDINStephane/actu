@@ -1,0 +1,57 @@
+App\Application\Doctrine\Entity\DoctrineEpisode:
+    type: entity
+    table: episode
+
+    id:
+        id:
+            type: string
+            generator: { strategy: NONE }
+    fields:
+        title:
+            type: string
+            length: 255
+        slug:
+            type: string
+            length: 255
+            unique: true
+        number:
+            type: string
+            length: 255
+        images:
+            type: array
+        year:
+            type: string
+            length: 255
+        description:
+            type: array
+        note:
+            type: string
+            length: 255
+        episodeShow:
+            type: string
+            length: 255
+        seen:
+            type: boolean
+            default: false
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            nullable: true
+            gedmo:
+                timestampable:
+                    on: update
+    manyToOne:
+        season:
+            targetEntity: DoctrineSeason
+            joinColumn:
+                name: season
+                referencedColumnName: id
+        serie:
+            targetEntity: DoctrineSerie
+            joinColumn:
+                name: serie
+                referencedColumnName: id

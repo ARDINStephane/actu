@@ -2,6 +2,7 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
 use App\Application\Common\Entity\Serie;
@@ -10,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class DoctrineEpisode
- * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\EpisodeRepository")
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\DoctrineEpisodeRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */
@@ -30,6 +31,10 @@ class DoctrineEpisode implements Episode
      * @var string
      */
     private $slug;
+    /**
+     * @var string
+     */
+    private $number;
     /**
      * @var array|null
      */
@@ -124,6 +129,24 @@ class DoctrineEpisode implements Episode
     public function setSlug(string $slug): Episode
     {
         $this->slug = $slug;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumber(): string
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param string $number
+     * @return DoctrineEpisode
+     */
+    public function setNumber(string $number): Episode
+    {
+        $this->number = $number;
         return $this;
     }
 

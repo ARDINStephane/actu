@@ -39,6 +39,17 @@ interface Episode
     public function setSlug(string $slug): Episode;
 
     /**
+     * @return string
+     */
+    public function getNumber(): string;
+
+    /**
+     * @param string $number
+     * @return DoctrineEpisode
+     */
+    public function setNumber(string $number): Episode;
+
+    /**
      * @return array|null
      */
     public function getImages(): ?array;

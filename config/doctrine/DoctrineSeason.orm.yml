@@ -1,0 +1,58 @@
+App\Application\Doctrine\Entity\DoctrineSeason:
+    type: entity
+    table: season
+
+    id:
+        id:
+            type: string
+            generator: { strategy: NONE }
+    fields:
+        number:
+            type: string
+            length: 255
+        images:
+            type: array
+        year:
+            type: string
+            length: 255
+        description:
+            type: array
+        note:
+            type: string
+            length: 255
+        seasonShow:
+            type: string
+            length: 255
+        seen:
+            type: boolean
+            default: false
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            nullable: true
+            gedmo:
+                timestampable:
+                    on: update
+    manyToOne:
+        serie:
+            targetEntity: DoctrineSerie
+            joinColumn:
+                name: serie
+                referencedColumnName: id
+    oneToMany:
+        episodes:
+            targetEntity: DoctrineEpisode
+            orphanRemoval: true
+            mappedBy: season
+            cascade: ["persist"]
+    oneToOne:
+        lastEpisodeSeen:
+            targetEntity: DoctrineEpisode
+            joinColumn:
+                name: lastEpisodeSeen
+                referencedColumnName: id
+            nullable: true

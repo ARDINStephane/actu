@@ -2,6 +2,7 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
 use App\Application\Common\Entity\Serie;
@@ -12,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class DoctrineSerie
- * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\SerieRepository")
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\DoctrineSerieRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */

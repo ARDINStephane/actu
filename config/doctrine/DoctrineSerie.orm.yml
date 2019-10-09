@@ -1,0 +1,75 @@
+App\Application\Doctrine\Entity\DoctrineSerie:
+    type: entity
+    table: serie
+
+    id:
+        id:
+            type: string
+            generator: { strategy: NONE }
+    fields:
+        title:
+            type: string
+            length: 255
+        slug:
+            type: string
+            length: 255
+            unique: true
+        alias:
+            type: array
+        images:
+            type: array
+        year:
+            type: string
+            length: 255
+        origin:
+            type: string
+            length: 255
+        genre:
+            type: array
+        numberOfSeasons:
+            type: string
+        seasonsDetails:
+            type: array
+            length: 255
+        numberOfEpisodes:
+            type: string
+            length: 255
+        lastEpisode:
+            type: string
+            length: 255
+        description:
+            type: array
+        note:
+            type: string
+            length: 255
+        status:
+            type: string
+            length: 255
+        serieShow:
+            type: string
+            length: 255
+        seen:
+            type: boolean
+            default: false
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            nullable: true
+            gedmo:
+                timestampable:
+                    on: update
+    oneToMany:
+        seasons:
+            targetEntity: DoctrineSeason
+            orphanRemoval: true
+            mappedBy: serie
+            cascade: ["persist"]
+        episodes:
+            targetEntity: DoctrineEpisode
+            mappedBy: serie
+            orphanRemoval: true
+            cascade: ["persist"]

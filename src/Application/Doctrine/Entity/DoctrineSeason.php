@@ -2,6 +2,7 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,8 +14,8 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Class SDoctrineeason
- * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\EpisodeRepository")
+ * Class DoctrineSeason
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\DoctrineSeasonRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */
