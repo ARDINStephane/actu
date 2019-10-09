@@ -10,47 +10,61 @@ App\Application\Doctrine\Entity\DoctrineSerie:
         title:
             type: string
             length: 255
+            unique: true
         slug:
             type: string
             length: 255
             unique: true
         alias:
             type: array
+            nullable: true
         images:
             type: array
+            nullable: true
         year:
             type: string
             length: 255
+            nullable: true
         origin:
             type: string
             length: 255
+            nullable: true
         genre:
             type: array
+            nullable: true
         numberOfSeasons:
             type: string
+            nullable: true
         seasonsDetails:
             type: array
             length: 255
         numberOfEpisodes:
             type: string
             length: 255
+            nullable: true
         lastEpisode:
             type: string
             length: 255
+            nullable: true
         description:
             type: array
+            nullable: true
         note:
             type: string
             length: 255
+            nullable: true
         status:
             type: string
             length: 255
+            nullable: true
         serieShow:
             type: string
             length: 255
+            nullable: true
         seen:
             type: boolean
             default: false
+            nullable: true
         createdAt:
             type: datetime
             gedmo:
@@ -68,8 +82,10 @@ App\Application\Doctrine\Entity\DoctrineSerie:
             orphanRemoval: true
             mappedBy: serie
             cascade: ["persist"]
+            nullable: true
         episodes:
             targetEntity: DoctrineEpisode
             mappedBy: serie
             orphanRemoval: true
             cascade: ["persist"]
+            nullable: true

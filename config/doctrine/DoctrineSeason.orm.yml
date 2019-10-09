@@ -8,24 +8,30 @@ App\Application\Doctrine\Entity\DoctrineSeason:
             generator: { strategy: NONE }
     fields:
         number:
-            type: string
-            length: 255
+            type: integer
+            unique: true
         images:
             type: array
+            nullable: true
         year:
             type: string
             length: 255
+            nullable: true
         description:
             type: array
+            nullable: true
         note:
             type: string
             length: 255
+            nullable: true
         seasonShow:
             type: string
             length: 255
+            nullable: true
         seen:
             type: boolean
             default: false
+            nullable: true
         createdAt:
             type: datetime
             gedmo:
@@ -43,12 +49,14 @@ App\Application\Doctrine\Entity\DoctrineSeason:
             joinColumn:
                 name: serie
                 referencedColumnName: id
+            nullable: true
     oneToMany:
         episodes:
             targetEntity: DoctrineEpisode
             orphanRemoval: true
             mappedBy: season
             cascade: ["persist"]
+            nullable: true
     oneToOne:
         lastEpisodeSeen:
             targetEntity: DoctrineEpisode

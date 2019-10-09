@@ -10,29 +10,36 @@ App\Application\Doctrine\Entity\DoctrineEpisode:
         title:
             type: string
             length: 255
+            unique: true
         slug:
             type: string
             length: 255
             unique: true
         number:
-            type: string
-            length: 255
+            type: integer
+            unique: true
         images:
             type: array
+            nullable: true
         year:
             type: string
             length: 255
+            nullable: true
         description:
             type: array
+            nullable: true
         note:
             type: string
             length: 255
+            nullable: true
         episodeShow:
             type: string
             length: 255
+            nullable: true
         seen:
             type: boolean
             default: false
+            nullable: true
         createdAt:
             type: datetime
             gedmo:
@@ -50,8 +57,10 @@ App\Application\Doctrine\Entity\DoctrineEpisode:
             joinColumn:
                 name: season
                 referencedColumnName: id
+            nullable: true
         serie:
             targetEntity: DoctrineSerie
             joinColumn:
                 name: serie
                 referencedColumnName: id
+            nullable: true
