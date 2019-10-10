@@ -1,11 +1,10 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        providers:
-            from_database:
-                entity:
-                    class: App\Entity\User
-                    property: username
+        from_database:
+            entity:
+                class: App\Application\Doctrine\Entity\DoctrineUser
+                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -20,7 +19,7 @@ security:
                 target: /
             guard:
                 authenticators:
-                    - App\Security\LoginFormAuthenticator
+                    - App\Application\Security\LoginFormAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
@@ -35,6 +34,6 @@ security:
         # - { path: ^/profile, roles: ROLE_USER }
 
     encoders:
-        App\Entity\User:
+        App\Application\Doctrine\Entity\DoctrineUser:
             algorithm: auto
             cost: 12

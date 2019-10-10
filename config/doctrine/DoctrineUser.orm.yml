@@ -3,8 +3,8 @@ App\Application\Doctrine\Entity\DoctrineUser:
   table: user
   id:
     id:
-      type: string
-      generator: { strategy: NONE }
+      type: integer
+      generator: { strategy: AUTO }
   fields:
     username:
       type: string

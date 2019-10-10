@@ -24,14 +24,14 @@
         {% if app.user %}
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href={{ path('home.index') }}>Se déconnecter</a>
+                    <a class="nav-link" href={{ path('logout') }}>Se déconnecter</a>
                 </li>
             </ul>
         {% endif %}
         {% if not app.user %}
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href={{ path('home.index') }}>Se Connecter</a>
+                    <a class="nav-link" href={{ path('login') }}>Se Connecter</a>
                 </li>
             </ul>
         {% endif %}
