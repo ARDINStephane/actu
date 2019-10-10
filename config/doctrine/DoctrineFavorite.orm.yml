@@ -1,0 +1,31 @@
+App\Application\Doctrine\Entity\DoctrineFavorite:
+  type: entity
+  table: favorite
+
+  id:
+    id:
+      type: integer
+      generator: { strategy: auto }
+
+  fields:
+    createdAt:
+      type: datetime
+      nullable: true
+      gedmo:
+        timestampable:
+          on: create
+  manyToOne:
+    user:
+      targetEntity: DoctrineUser
+      inversedBy: user
+      joinColumn:
+        name: user
+        referencedColumnName: id
+      nullable: true
+    serie:
+      targetEntity: DoctrineSerie
+      inversedBy: serie
+      joinColumn:
+        name: serie
+        referencedColumnName: id
+      nullable: true

@@ -251,4 +251,20 @@ interface Serie
      * @return string
      */
     public function __toString(): string;
+    /**
+     * @return Collection|Favorite[]
+     */
+    public function getFavorites(): Collection;
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function addFavorite(Favorite $favorite): Serie;
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function removeFavorite(Favorite $favorite): Serie;
 }

@@ -1,0 +1,21 @@
+App\Application\Doctrine\Entity\DoctrineUser:
+  type: entity
+  table: user
+  id:
+    id:
+      type: string
+      generator: { strategy: NONE }
+  fields:
+    username:
+      type: string
+      nullable: true
+      length: 100
+    password:
+      type: string
+      length: 255
+  oneToMany:
+    favorites:
+      targetEntity: DoctrineFavorite
+      orphanRemoval: true
+      mappedBy: user
+      cascade: ["persist"]
