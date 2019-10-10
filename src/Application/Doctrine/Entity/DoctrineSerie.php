@@ -155,7 +155,7 @@ class DoctrineSerie implements Serie
      */
     public function getAlias(): ?array
     {
-        return $this->alias;
+        return json_decode($this->alias);
     }
 
     /**
@@ -182,7 +182,7 @@ class DoctrineSerie implements Serie
      */
     public function setAlias(?array $alias): Serie
     {
-        $this->alias = $alias;
+        $this->alias = json_encode($alias);
         return $this;
     }
 
@@ -191,7 +191,7 @@ class DoctrineSerie implements Serie
      */
     public function getImages(): ?array
     {
-        return $this->images;
+        return json_decode($this->images);
     }
 
     /**
@@ -200,7 +200,7 @@ class DoctrineSerie implements Serie
      */
     public function setImages(?array $images): Serie
     {
-        $this->images = $images;
+        $this->images = json_encode($images);
         return $this;
     }
 
@@ -245,7 +245,7 @@ class DoctrineSerie implements Serie
      */
     public function getGenre(): ?array
     {
-        return $this->genre;
+        return json_decode($this->genre);
     }
 
     /**
@@ -254,7 +254,7 @@ class DoctrineSerie implements Serie
      */
     public function setGenre(?array $genre): Serie
     {
-        $this->genre = $genre;
+        $this->genre = json_encode($genre);
         return $this;
     }
 
@@ -270,7 +270,7 @@ class DoctrineSerie implements Serie
      * @param string|null $numberOfSeasons
      * @return Serie
      */
-    public function setNumberOfSeasons(?string $numberOfSeasons): SerieCardDTO
+    public function setNumberOfSeasons(?string $numberOfSeasons): Serie
     {
         $this->numberOfSeasons = $numberOfSeasons;
         return $this;
@@ -281,7 +281,7 @@ class DoctrineSerie implements Serie
      */
     public function getSeasonsDetails(): ?array
     {
-        return $this->seasonsDetails;
+        return json_decode($this->seasonsDetails);
     }
 
     /**
@@ -290,7 +290,7 @@ class DoctrineSerie implements Serie
      */
     public function setSeasonsDetails(?array $seasonsDetails): Serie
     {
-        $this->seasonsDetails = $seasonsDetails;
+        $this->seasonsDetails = json_encode($seasonsDetails);
         return $this;
     }
 
@@ -353,7 +353,7 @@ class DoctrineSerie implements Serie
      */
     public function getNote(): ?array
     {
-        return $this->note;
+        return json_decode($this->note);
     }
 
     /**
@@ -362,7 +362,7 @@ class DoctrineSerie implements Serie
      */
     public function setNote(?array $note): Serie
     {
-        $this->note = $note;
+        $this->note = json_encode($note);
         return $this;
     }
 
@@ -522,5 +522,13 @@ class DoctrineSerie implements Serie
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getId();
     }
 }

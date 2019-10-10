@@ -60,6 +60,7 @@ App\Application\Doctrine\Entity\DoctrineEpisode:
             nullable: true
         serie:
             targetEntity: DoctrineSerie
+            inversedBy: serie
             joinColumn:
                 name: serie
                 referencedColumnName: id

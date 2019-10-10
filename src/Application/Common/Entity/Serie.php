@@ -246,4 +246,9 @@ interface Serie
      * @return Serie
      */
     public function removeEpisodes(Episode $episode): Serie;
+
+    /**
+     * @return string
+     */
+    public function __toString(): string;
 }

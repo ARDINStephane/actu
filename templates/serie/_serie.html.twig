@@ -10,5 +10,7 @@
         <div class="text-primary">Nombre de saisons: {{ serie.numberOfSeasons }}</div>
         <div class="text-primary">Nombre dépisodes: {{ serie.numberOfEpisodes }}</div>
         <div class="text-primary">Dernier dépisode: {{ serie.lastEpisode }}</div>
+        <a class="btn btn-primary" href="{{path('serie.add', {id: serie.id}) }}" role="button">Ajouter</a>
+        <a class="btn btn-danger" href="{{path('serie.delete', {id: serie.id}) }}" role="button">Supprimer</a>
     </div>
 </div>

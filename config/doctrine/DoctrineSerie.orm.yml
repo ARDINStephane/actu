@@ -89,3 +89,4 @@ App\Application\Doctrine\Entity\DoctrineSerie:
             orphanRemoval: true
             cascade: ["persist"]
             nullable: true
+
