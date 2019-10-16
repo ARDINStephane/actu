@@ -17,14 +17,14 @@ App\Application\Doctrine\Entity\DoctrineFavorite:
   manyToOne:
     user:
       targetEntity: DoctrineUser
-      inversedBy: user
+      inversedBy: favorites
       joinColumn:
         name: user
         referencedColumnName: id
       nullable: true
     serie:
       targetEntity: DoctrineSerie
-      inversedBy: serie
+      inversedBy: favorites
       joinColumn:
         name: serie
         referencedColumnName: id

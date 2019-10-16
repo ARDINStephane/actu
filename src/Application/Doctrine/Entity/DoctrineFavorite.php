@@ -32,6 +32,12 @@ class DoctrineFavorite implements Favorite
      */
     private $user;
 
+    public function __construct(User $user, Serie $serie)
+    {
+        $this->setSerie($serie);
+        $this->setUser($user);
+    }
+
     /**
      * @return int|null
      */
@@ -73,6 +79,8 @@ class DoctrineFavorite implements Favorite
     public function setSerie(Serie $serie): Favorite
     {
         $this->serie = $serie;
+        $serie->addFavorite($this);
+
         return $this;
     }
 
@@ -91,7 +99,23 @@ class DoctrineFavorite implements Favorite
     public function setUser(User $user): Favorite
     {
         $this->user = $user;
+        $user->addFavorite($this);
+
         return $this;
+    }
+
+    /**
+     * @param User $user
+     * @param Serie $serie
+     * @return Favorite
+     */
+    public function removeFromAssociations(User $user, Serie $serie): Favorite
+    {
+        $user->removeFavorite($this);
+        $serie->removeFavorite($this);
+
+        return $this;
+
     }
 
     /**

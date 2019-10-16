@@ -42,4 +42,11 @@ interface Favorite
      * @return \App\Application\Common\Entity\Favorite
      */
     public function setUser(User $user): Favorite;
+
+    /**
+     * @param User $user
+     * @param Serie $serie
+     * @return Favorite
+     */
+    public function removeFromAssociations(User $user, Serie $serie): Favorite;
 }

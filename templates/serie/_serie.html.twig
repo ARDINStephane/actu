@@ -9,8 +9,9 @@
         </div>
         <div class="text-primary">Nombre de saisons: {{ serie.numberOfSeasons }}</div>
         <div class="text-primary">Nombre dépisodes: {{ serie.numberOfEpisodes }}</div>
-        <div class="text-primary">Dernier dépisode: {{ serie.lastEpisode }}</div>
-        <a class="btn btn-primary" href="{{path('serie.add', {id: serie.id}) }}" role="button">Ajouter</a>
-        <a class="btn btn-danger" href="{{path('serie.delete', {id: serie.id}) }}" role="button">Supprimer</a>
+        {% if app.user %}
+            <div class="text-primary">Dernier dépisode: {{ serie.lastEpisode }}</div>
+            <a class="btn {% if serie.isfavorite == false %}btn-primary{% else %}btn-danger {% endif %}" href={{ serie.toggleFavorite }}>{% if serie.isfavorite == false %}Ajouter en favori{% else %}supprimer des favoris{% endif %}</a>
+        {%  endif %}
     </div>
 </div>

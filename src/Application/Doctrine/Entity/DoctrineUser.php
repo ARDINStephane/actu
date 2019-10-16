@@ -183,6 +183,7 @@ class DoctrineUser implements UserInterface, User
     {
         $this->favorites->add($favorite);
 
+
         return $this;
     }
 

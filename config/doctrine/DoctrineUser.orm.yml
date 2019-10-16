@@ -16,6 +16,5 @@ App\Application\Doctrine\Entity\DoctrineUser:
   oneToMany:
     favorites:
       targetEntity: DoctrineFavorite
-      orphanRemoval: true
       mappedBy: user
       cascade: ["persist"]

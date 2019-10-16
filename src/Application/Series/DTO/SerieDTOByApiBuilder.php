@@ -5,6 +5,7 @@ namespace App\Application\Series\DTO;
 
 use Cocur\Slugify\Slugify;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SerieDTOByApiBuilder
 {
@@ -12,11 +13,17 @@ class SerieDTOByApiBuilder
      * @var RouterInterface
      */
     private $router;
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
 
     public function __construct(
-        RouterInterface $router
+        RouterInterface $router,
+        TokenStorageInterface $tokenStorage
     ) {
         $this->router = $router;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -41,7 +48,8 @@ class SerieDTOByApiBuilder
         $note= $serie['notes'];
         $status= $serie['status'];
         $serieShow = $this->router->generate('serie.show', ['id' => $id]);
-        //$toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $seire]);
+        $isfavorite = $this->isUsersFavorite($id);
+        $toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $id]);
 
         return new SerieCardDTO(
             $id,
@@ -59,7 +67,9 @@ class SerieDTOByApiBuilder
             $description,
             $note,
             $status,
-            $serieShow
+            $serieShow,
+            $isfavorite,
+            $toggleFavorite
         );
     }
 
@@ -89,5 +99,24 @@ class SerieDTOByApiBuilder
         $slugify = new Slugify();
 
         return $slugify->slugify($title);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUsersFavorite($serieId): bool
+    {
+        $user = $this->tokenStorage->getToken()->getUser();
+        if(empty($user) || $user == "anon.") {
+            return false;
+        }
+        if(!empty($user->getFavorites())) {
+            foreach ($user->getFavorites() as $favorite) {
+                if($favorite->getSerie()->getId() == $serieId) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

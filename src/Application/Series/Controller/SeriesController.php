@@ -5,6 +5,8 @@ namespace App\Application\Series\Controller;
 
 use App\Api\BetaseriesApi\Provider\SeriesProvider;
 use App\Application\Common\Controller\BaseController;
+use App\Application\Common\Repository\FavoriteRepository;
+use App\Application\Common\Repository\SerieRepository;
 use App\Application\Series\DTO\SerieCardDTO;
 use App\Application\Series\DTO\SerieDTOByApiBuilder;
 use App\Application\Series\Factory\SerieFactory;
@@ -36,17 +38,29 @@ class SeriesController extends BaseController
      * @var serieManager
      */
     private $serieManager;
+    /**
+     * @var FavoriteRepository
+     */
+    private $favoriteRepository;
+    /**
+     * @var SerieRepository
+     */
+    private $serieRepository;
 
     public function __construct(
         SeriesProvider $seriesProvider,
         SerieDTOByApiBuilder $serieDTOByApiBuilder,
         SerieFactory $serieFactory,
-        serieManager $serieManager
+        serieManager $serieManager,
+        FavoriteRepository $favoriteRepository,
+        SerieRepository $serieRepository
     ) {
         $this->seriesProvider = $seriesProvider;
         $this->serieDTOByApiBuilder = $serieDTOByApiBuilder;
         $this->serieFactory = $serieFactory;
         $this->serieManager = $serieManager;
+        $this->favoriteRepository = $favoriteRepository;
+        $this->serieRepository = $serieRepository;
     }
 
     /**
@@ -94,27 +108,46 @@ class SeriesController extends BaseController
     /**
      * @Route("/serie/add/{id}", name="serie.add")
      * @param string $id
-     * @return Response
+     * @return Void
      */
-    public function add(string $id): Response
+    public function add(string $id): Void
     {
         $serieInfo = $this->seriesProvider->provideSerieBy($id);
         $serie = $this->serieFactory->buildByApi($serieInfo);
 
         $this->serieManager->saveSerie($serie);
-
-        return $this->redirectToRoute("home.index");
     }
 
     /**
      * @Route("/serie/delete/{id}", name="serie.delete")
      * @param string $id
-     * @return Response
+     * @return Void
      */
-    public function delete(string $id): Response
+    public function delete(string $id): Void
     {
         $this->serieManager->deleteSerie($id);
+    }
 
-        return $this->redirectToRoute("home.index");
+    /**
+     * @Route("/toggle_favorite/{id}}", name="toggle_favorite")
+     */
+    public function toggleFavorite(string $id)
+    {
+        $serie = $this->findByRepository($this->serieRepository,$id);
+        $user = $this->getUser();
+        $favorite = $this->favoriteRepository->getFavorite($user, $id);
+
+        if ($favorite == null) {
+            if(empty($serie)) {
+                $this->add($id);
+            }
+            $favorite = $this->favoriteRepository->new($user, $serie);
+            $this->favoriteRepository->save($favorite);
+        } else {
+            $favorite->removeFromAssociations($user, $serie);
+            $this->favoriteRepository->delete($favorite->getId());
+            $this->delete($id);
+        }
+        return $this->redirectToRoute('home.index');
     }
 }
