@@ -45,7 +45,7 @@ interface Episode
 
     /**
      * @param string $number
-     * @return DoctrineEpisode
+     * @return Episode
      */
     public function setNumber(string $number): Episode;
 

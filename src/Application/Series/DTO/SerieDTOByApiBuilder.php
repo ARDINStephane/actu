@@ -3,12 +3,16 @@
 namespace App\Application\Series\DTO;
 
 
+use App\Api\BetaseriesApi\Provider\SeriesProvider;
 use Cocur\Slugify\Slugify;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class SerieDTOByApiBuilder
 {
+    const Index = 'index';
+    const Search = 'search';
+
     /**
      * @var RouterInterface
      */
@@ -17,20 +21,51 @@ class SerieDTOByApiBuilder
      * @var TokenStorageInterface
      */
     private $tokenStorage;
+    /**
+     * @var SeriesProvider
+     */
+    private $seriesProvider;
 
     public function __construct(
         RouterInterface $router,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
+        SeriesProvider $seriesProvider
     ) {
         $this->router = $router;
         $this->tokenStorage = $tokenStorage;
+        $this->seriesProvider = $seriesProvider;
     }
 
     /**
-     * @param $serie
+     * @param array $serie
+     * @param string $tag
+     * @return SerieCardDTO
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function switchAndBuildBetaserieInfo(array $serie, string $tag): SerieCardDTO
+    {
+        switch ($tag) {
+            case self::Index:
+                $serieDto = $this->build($serie);
+                break;
+            case self::Search:
+                $betaSerie = $this->seriesProvider->provideSerieBy($serie['id']);
+
+                $serieDto = $this->build($betaSerie);
+                break;
+        }
+
+        return $serieDto;
+    }
+
+    /**
+     * @param array $serie
      * @return SerieCardDTO
      */
-    public function build($serie): SerieCardDTO
+    protected function build(array $serie): SerieCardDTO
     {
         $id = $serie['id'];
         $title= $serie['original_title'];
@@ -104,7 +139,7 @@ class SerieDTOByApiBuilder
     /**
      * @return bool
      */
-    public function isUsersFavorite($serieId): bool
+    protected function isUsersFavorite($serieId): bool
     {
         $user = $this->tokenStorage->getToken()->getUser();
         if(empty($user) || $user == "anon.") {

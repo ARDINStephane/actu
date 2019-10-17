@@ -12,6 +12,7 @@ use Symfony\Component\HttpClient\CurlHttpClient;
  */
 class SeriesProvider
 {
+    const GetMethod = 'GET';
     /**
      * @var ParameterBagInterface
      */
@@ -35,23 +36,61 @@ class SeriesProvider
      */
     public function provideMostPopularSeries(): array
     {
-        $clientId = $this->params->get('clientId');
-        $client = new CurlHttpClient();
-        $response = $client->request('GET', 'https://api.betaseries.com/shows/list?&order=popularity&limit=120&v=3.0&key=' . $clientId);
+        $url = 'https://api.betaseries.com/shows/list?&order=popularity&limit=120';
 
-        $series = json_decode($response->getContent(), true);
+        $series = $this->curlRequestResults(self::GetMethod, $url);
 
         return $series['shows'];
     }
 
+    /**
+     * @param string $id
+     * @return array
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
     public function provideSerieBy(string $id): array
+    {
+        $url = 'https://api.betaseries.com/shows/display?id=' .$id;
+
+        $serie = $this->curlRequestResults(self::GetMethod, $url);
+
+        return $serie['show'];
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function searchSerie(string $name): array
+    {
+        $url = 'https://api.betaseries.com/search/all?query=' . $name;
+        $series = $this->curlRequestResults(self::GetMethod, $url);
+
+        return $series['shows'];
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @return array
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    protected function curlRequestResults(string $method, string $url): array
     {
         $clientId = $this->params->get('clientId');
         $client = new CurlHttpClient();
-        $response = $client->request('GET', 'https://api.betaseries.com/shows/display?id=' .$id .'&v=3.0&key=' . $clientId);
+        $response = $client->request($method, $url . '&v=3.0&key=' . $clientId);
 
-        $serie = json_decode($response->getContent(), true);
-
-        return $serie['show'];
+        return json_decode($response->getContent(), true);
     }
 }

@@ -7,11 +7,11 @@ use App\Api\BetaseriesApi\Provider\SeriesProvider;
 use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
-use App\Application\Series\DTO\SerieCardDTO;
+use App\Application\Helpers\Paginator;
 use App\Application\Series\DTO\SerieDTOByApiBuilder;
 use App\Application\Series\Factory\SerieFactory;
 use App\Application\Series\Manager\serieManager;
-use Knp\Component\Pager\PaginatorInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -46,6 +46,10 @@ class SeriesController extends BaseController
      * @var SerieRepository
      */
     private $serieRepository;
+    /**
+     * @var PaginationInterface
+     */
+    private $paginator;
 
     public function __construct(
         SeriesProvider $seriesProvider,
@@ -53,7 +57,8 @@ class SeriesController extends BaseController
         SerieFactory $serieFactory,
         serieManager $serieManager,
         FavoriteRepository $favoriteRepository,
-        SerieRepository $serieRepository
+        SerieRepository $serieRepository,
+        Paginator $paginator
     ) {
         $this->seriesProvider = $seriesProvider;
         $this->serieDTOByApiBuilder = $serieDTOByApiBuilder;
@@ -61,44 +66,42 @@ class SeriesController extends BaseController
         $this->serieManager = $serieManager;
         $this->favoriteRepository = $favoriteRepository;
         $this->serieRepository = $serieRepository;
+        $this->paginator = $paginator;
     }
 
     /**
      * @Route("/", name="home.index")
+     * @param Request $request
      * @return Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function index(PaginatorInterface $paginator, Request $request): Response
+    public function index(Request $request): Response
     {
-        $series = [];
         $betaseries = $this->seriesProvider->provideMostPopularSeries();
 
-        foreach ($betaseries as $betaserie) {
-            $series[] = $this->serieDTOByApiBuilder->build($betaserie);
-        }
-        $series = $paginator->paginate(
-            $series,
-            $request->query->getInt('page', 1),
-            12
-        );
-
+        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOByApiBuilder::Index);
         return $this->render('pages/home.html.twig', [
-            'series' => $series
+            'series' => $series,
+            'current_menu' => 'home'
         ]);
     }
 
     /**
-     * @Route("/serie/{id}", name="serie.show")
+     * @Route("/serie/show/{id}", name="serie.show")
      * @param string $id
      * @return Response
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function show(string $id): Response
     {
         $serie = $this->seriesProvider->provideSerieBy($id);
-        $serie = $this->serieDTOByApiBuilder->build($serie);
+        $serie = $this->serieDTOByApiBuilder->switchAndBuildBetaserieInfo($serie, SerieDTOByApiBuilder::Index);
 
         return $this->render('serie/_serie.html.twig', [
             'serie' => $serie
@@ -109,6 +112,10 @@ class SeriesController extends BaseController
      * @Route("/serie/add/{id}", name="serie.add")
      * @param string $id
      * @return Void
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function add(string $id): Void
     {
@@ -129,25 +136,25 @@ class SeriesController extends BaseController
     }
 
     /**
-     * @Route("/toggle_favorite/{id}}", name="toggle_favorite")
+     * @Route("/serie/search", name="series.search")
+     * @param Request $request
+     * @return Response
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function toggleFavorite(string $id)
+    public function search(Request $request): Response
     {
-        $serie = $this->findByRepository($this->serieRepository,$id);
-        $user = $this->getUser();
-        $favorite = $this->favoriteRepository->getFavorite($user, $id);
+        $search = 'good+doctor';
 
-        if ($favorite == null) {
-            if(empty($serie)) {
-                $this->add($id);
-            }
-            $favorite = $this->favoriteRepository->new($user, $serie);
-            $this->favoriteRepository->save($favorite);
-        } else {
-            $favorite->removeFromAssociations($user, $serie);
-            $this->favoriteRepository->delete($favorite->getId());
-            $this->delete($id);
-        }
-        return $this->redirectToRoute('home.index');
+        $betaseries = $this->seriesProvider->searchSerie($search);
+        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOByApiBuilder::Search);
+
+        return $this->render('pages/home.html.twig', [
+            'series' => $series,
+            'search' => $search,
+            'current_menu' => 'search'
+        ]);
     }
 }
