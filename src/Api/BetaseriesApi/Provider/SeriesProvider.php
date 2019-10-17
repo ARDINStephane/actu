@@ -70,7 +70,7 @@ class SeriesProvider
      */
     public function searchSerie(string $name): array
     {
-        $url = 'https://api.betaseries.com/search/all?query=' . $name;
+        $url = 'https://api.betaseries.com/search/all?query=' . $name . '&limit=24';
         $series = $this->curlRequestResults(self::GetMethod, $url);
 
         return $series['shows'];

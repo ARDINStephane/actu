@@ -8,9 +8,11 @@ use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Helpers\Paginator;
+use App\Application\Search\Entity\Search;
 use App\Application\Series\DTO\SerieDTOByApiBuilder;
 use App\Application\Series\Factory\SerieFactory;
 use App\Application\Series\Manager\serieManager;
+use App\Application\Search\Form\SearchType;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SeriesController extends BaseController
 {
+    const Home = "home";
     /**
      * @var SeriesProvider
      */
@@ -80,12 +83,23 @@ class SeriesController extends BaseController
      */
     public function index(Request $request): Response
     {
+        $form = $this->handleForm($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form->getData();
+
+            return $this->redirectToRoute('serie.search', [
+                'search' => $search->getName()
+            ]);
+        }
         $betaseries = $this->seriesProvider->provideMostPopularSeries();
 
         $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOByApiBuilder::Index);
+
         return $this->render('pages/home.html.twig', [
             'series' => $series,
-            'current_menu' => 'home'
+            'current_menu' => self::Home,
+            'form' => $form->createView()
         ]);
     }
 
@@ -136,17 +150,25 @@ class SeriesController extends BaseController
     }
 
     /**
-     * @Route("/serie/search", name="series.search")
-     * @param Request $request
+     * @Route("/serie/search/{search}", name="serie.search")
+     * @param string $search
      * @return Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function search(Request $request): Response
+    public function search(string $search, Request $request): Response
     {
-        $search = 'good+doctor';
+        $form = $this->handleForm($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form->getData();
+
+            return $this->redirectToRoute('serie.search', [
+                'search' => $search->getName()
+            ]);
+        }
 
         $betaseries = $this->seriesProvider->searchSerie($search);
         $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOByApiBuilder::Search);
@@ -154,7 +176,21 @@ class SeriesController extends BaseController
         return $this->render('pages/home.html.twig', [
             'series' => $series,
             'search' => $search,
-            'current_menu' => 'search'
+            'current_menu' => self::Home,
+            'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Symfony\Component\Form\FormInterface
+     */
+    protected function handleForm(Request $request)
+    {
+        $newSearch = new Search();
+        $form = $this->createForm(SearchType::class, $newSearch);
+        $form->handleRequest($request);
+
+        return $form;
     }
 }
