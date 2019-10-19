@@ -5,6 +5,7 @@ namespace App\Application\Series\Controller;
 
 use App\Api\BetaseriesApi\Provider\SeriesProvider;
 use App\Application\Common\Controller\BaseController;
+use App\Application\Common\Entity\Serie;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Helpers\Paginator;
@@ -131,12 +132,14 @@ class SeriesController extends BaseController
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function add(string $id): Void
+    public function add(string $id): Serie
     {
         $serieInfo = $this->seriesProvider->provideSerieBy($id);
         $serie = $this->serieFactory->buildByApi($serieInfo);
 
         $this->serieManager->saveSerie($serie);
+
+        return $serie;
     }
 
     /**

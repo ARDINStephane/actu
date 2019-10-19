@@ -47,10 +47,9 @@ class FavoriteController extends BaseController
         $serie = $this->findByRepository($this->serieRepository,$id);
         $user = $this->getUser();
         $favorite = $this->favoriteRepository->getFavorite($user, $id);
-
         if ($favorite == null) {
             if(empty($serie)) {
-                $this->seriesController->add($id);
+                $serie = $this->seriesController->add($id);
             }
             $favorite = $this->favoriteRepository->new($user, $serie);
             $this->favoriteRepository->save($favorite);
