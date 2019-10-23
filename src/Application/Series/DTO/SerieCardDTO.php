@@ -3,6 +3,10 @@
 namespace App\Application\Series\DTO;
 
 
+/**
+ * Class SerieCardDTO
+ * @package App\Application\Series\DTO
+ */
 class SerieCardDTO
 {
     /**
@@ -22,7 +26,7 @@ class SerieCardDTO
      */
     private $alias;
     /**
-     * @var string|null
+     * @var array|null
      */
     private $images;
     /**
@@ -34,21 +38,21 @@ class SerieCardDTO
      */
     private $origin;
     /**
-     * @var string|null
+     * @var array|null
      */
     private $genre;
     /**
      * @var string|null
      */
-    private $seasons;
+    private $numberOfSeasons;
     /**
-     * @var string|null
+     * @var array|null
      */
     private $seasonsDetails;
     /**
      * @var string|null
      */
-    private $episodes;
+    private $numberOfepisodes;
     /**
      * @var string|null
      */
@@ -58,7 +62,7 @@ class SerieCardDTO
      */
     private $description;
     /**
-     * @var string|null
+     * @var array|null
      */
     private $note;
     /**
@@ -69,6 +73,14 @@ class SerieCardDTO
      * @var string|null
      */
     private $serieShow;
+    /**
+     * @var string|null
+     */
+    private $toggleFavorite;
+    /**
+     * @var bool
+     */
+    private $isfavorite;
 
     public function __construct(
         ?string $id,
@@ -79,14 +91,16 @@ class SerieCardDTO
         ?string $year,
         ?string $origin,
         ?array $genre,
-        ?string $seasons,
+        ?string $numberOfSeasons,
         ?array $seasonsDetails,
-        ?string $episodes,
+        ?string $numberOfepisodes,
         ?string $lastEpisode,
         ?string $description,
         ?array $note,
         ?string $status,
-        ?string $serieShow
+        ?string $serieShow,
+        bool $isfavorite,
+        ?string $toggleFavorite
     ) {
         $this->id = $id;
         $this->title = $title;
@@ -96,14 +110,16 @@ class SerieCardDTO
         $this->year = $year;
         $this->origin = $origin;
         $this->genre = $genre;
-        $this->seasons = $seasons;
+        $this->numberOfSeasons = $numberOfSeasons;
         $this->seasonsDetails = $seasonsDetails;
-        $this->episodes = $episodes;
+        $this->numberOfepisodes = $numberOfepisodes;
         $this->lastEpisode = $lastEpisode;
         $this->description = $description;
         $this->note = $note;
         $this->status = $status;
         $this->serieShow = $serieShow;
+        $this->toggleFavorite = $toggleFavorite;
+        $this->isfavorite = $isfavorite;
     }
 
     public function toArray(): array
@@ -116,8 +132,8 @@ class SerieCardDTO
             'year' => $this->year,
             'origin' => $this->origin,
             'genre' => $this->genre,
-            'seasons' => $this->seasons,
-            'episodes' => $this->episodes,
+            'numberOfSeasons' => $this->numberOfSeasons,
+            'numberOfnumberOfepisodes' => $this->numberOfepisodes,
             'lastEpisode' => $this->lastEpisode,
             'description' => $this->description,
             'note' => $this->note,
@@ -273,18 +289,18 @@ class SerieCardDTO
     /**
      * @return string|null
      */
-    public function getSeasons(): ?string
+    public function getNumberOfSeasons(): ?string
     {
-        return $this->seasons;
+        return $this->numberOfSeasons;
     }
 
     /**
-     * @param string|null $seasons
+     * @param string|null $numberOfSeasons
      * @return SerieCardDTO
      */
-    public function setSeasons(?string $seasons): SerieCardDTO
+    public function setNumberOfSeasons(?string $numberOfSeasons): SerieCardDTO
     {
-        $this->seasons = $seasons;
+        $this->numberOfSeasons = $numberOfSeasons;
         return $this;
     }
 
@@ -309,18 +325,18 @@ class SerieCardDTO
     /**
      * @return string|null
      */
-    public function getEpisodes(): ?string
+    public function getNumberOfEpisodes(): ?string
     {
-        return $this->episodes;
+        return $this->numberOfepisodes;
     }
 
     /**
-     * @param string|null $episodes
+     * @param string|null $numberOfepisodes
      * @return SerieCardDTO
      */
-    public function setEpisodes(?string $episodes): SerieCardDTO
+    public function setNumberOfEpisodes(?string $numberOfepisodes): SerieCardDTO
     {
-        $this->episodes = $episodes;
+        $this->numberOfepisodes = $numberOfepisodes;
         return $this;
     }
 
@@ -414,4 +430,39 @@ class SerieCardDTO
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getToggleFavorite(): ?string
+    {
+        return $this->toggleFavorite;
+    }
+
+    /**
+     * @param string|null $toggleFavorite
+     * @return SerieCardDTO
+     */
+    public function setToggleFavorite(?string $toggleFavorite): SerieCardDTO
+    {
+        $this->toggleFavorite = $toggleFavorite;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIsfavorite(): bool
+    {
+        return $this->isfavorite;
+    }
+
+    /**
+     * @param bool $isfavorite
+     * @return SerieCardDTO
+     */
+    public function setIsfavorite(bool $isfavorite): SerieCardDTO
+    {
+        $this->isfavorite = $isfavorite;
+        return $this;
+    }
 }
