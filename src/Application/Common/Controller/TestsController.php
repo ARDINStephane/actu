@@ -3,7 +3,8 @@
 namespace App\Application\Common\Controller;
 
 
-use Symfony\Component\HttpFoundation\Request;
+use App\Api\BetaseriesApi\Login\BetaseriesLoger;
+use App\Api\BetaseriesApi\Login\TokenManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -23,14 +24,14 @@ class TestsController extends BaseController
     protected $cool = "Cool on va bien s'amuser";
 
     /**
-     * @Route("/", name="home.index")
+     * @Route("/test", name="test.index")
      * @return Response
      */
     public function index(): Response
     {
-        return $this->render('test/home.html.twig', [
-            'yes' => $this->yes,
-            'cool' => $this->cool,
+        return $this->render('test/test.html.twig',[
+            'yes' =>$this->yes,
+            'cool' => $this->cool
         ]);
     }
 }
