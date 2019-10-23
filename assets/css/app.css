@@ -1,0 +1,11 @@
+body {
+    background-color: lightgray;
+}
+#description {
+    -webkit-line-clamp: 5;
+    overflow : hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
