@@ -62,7 +62,6 @@ App\Application\Doctrine\Entity\DoctrineSeason:
     oneToOne:
         lastEpisodeSeen:
             targetEntity: DoctrineEpisode
-            inversedBy: season
             joinColumn:
                 name: lastEpisodeSeen
                 referencedColumnName: id
