@@ -1,4 +1,4 @@
 controllers:
-    resource: ../src/Application/*/Controller/*Controller.php
+    resource: ../src/*/*/Controller/*Controller.php
     type: annotation
 

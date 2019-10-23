@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  #Betaseries connection
+  App\Application\Helpers\OAuth2ClientProvider\Oauth2Betaseries:
+    arguments:
+      $options:
+        clientId: '%env(CLIENT_ID)%'
+        clientSecret: '%env(CLIENT_SECRET)%'
+        redirectUri: '%env(REDIRECT_URI)%'
