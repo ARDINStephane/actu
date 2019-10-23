@@ -2,7 +2,7 @@
 
 namespace App\Application\Helpers;
 
-use App\Application\Series\DTO\SerieDTOByApiBuilder;
+use App\Application\Series\DTO\SerieDTOBuilder;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,20 +14,20 @@ use Symfony\Component\HttpFoundation\Request;
 class Paginator
 {
     /**
-     * @var SerieDTOByApiBuilder
+     * @var SerieDTOBuilder
      */
-    private $serieDTOByApiBuilder;
+    private $SerieDTOBuilder;
     /**
      * @var PaginatorInterface
      */
     private $paginator;
 
     public function __construct(
-        SerieDTOByApiBuilder $serieDTOByApiBuilder,
+        SerieDTOBuilder $SerieDTOBuilder,
         PaginatorInterface $paginator
     )
     {
-        $this->serieDTOByApiBuilder = $serieDTOByApiBuilder;
+        $this->SerieDTOBuilder = $SerieDTOBuilder;
         $this->paginator = $paginator;
     }
 
@@ -36,7 +36,7 @@ class Paginator
         $paginated = [];
 
         foreach ($series as $serie) {
-            $paginated[] = $this->serieDTOByApiBuilder->switchAndBuildBetaserieInfo($serie, $tag);
+            $paginated[] = $this->SerieDTOBuilder->switchAndBuildSerieInfo($serie, $tag);
         }
         $paginated = $this->paginator->paginate(
             $paginated,
