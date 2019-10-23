@@ -162,7 +162,7 @@ class DoctrineSerie implements Serie
      */
     public function getAlias(): ?array
     {
-        return json_decode($this->alias);
+        return json_decode($this->alias, true);
     }
 
     /**
@@ -198,7 +198,7 @@ class DoctrineSerie implements Serie
      */
     public function getImages(): ?array
     {
-        return json_decode($this->images);
+        return json_decode($this->images, true);
     }
 
     /**
@@ -252,7 +252,7 @@ class DoctrineSerie implements Serie
      */
     public function getGenre(): ?array
     {
-        return json_decode($this->genre);
+        return json_decode($this->genre, true);
     }
 
     /**
@@ -288,7 +288,7 @@ class DoctrineSerie implements Serie
      */
     public function getSeasonsDetails(): ?array
     {
-        return json_decode($this->seasonsDetails);
+        return json_decode($this->seasonsDetails, true);
     }
 
     /**
@@ -360,7 +360,7 @@ class DoctrineSerie implements Serie
      */
     public function getNote(): ?array
     {
-        return json_decode($this->note);
+        return json_decode($this->note, true);
     }
 
     /**

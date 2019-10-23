@@ -3,17 +3,18 @@
 namespace App\Application\Series\Controller;
 
 
-use App\Api\BetaseriesApi\Provider\SeriesProvider;
+use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
 use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Entity\Serie;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Helpers\Paginator;
 use App\Application\Search\Entity\Search;
-use App\Application\Series\DTO\SerieDTOByApiBuilder;
+use App\Application\Series\DTO\SerieDTOBuilder;
 use App\Application\Series\Factory\SerieFactory;
 use App\Application\Series\Manager\serieManager;
 use App\Application\Search\Form\SearchType;
+use App\Application\Series\Provider\SerieProvider;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,14 +27,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class SeriesController extends BaseController
 {
     const Home = "home";
+    const Favorites = "favorites";
     /**
-     * @var SeriesProvider
+     * @var SerieByApiProvider
      */
-    private $seriesProvider;
+    private $serieByApiProvider;
     /**
-     * @var SerieDTOByApiBuilder
+     * @var SerieDTOBuilder
      */
-    private $serieDTOByApiBuilder;
+    private $SerieDTOBuilder;
     /**
      * @var SerieFactory
      */
@@ -54,23 +56,29 @@ class SeriesController extends BaseController
      * @var PaginationInterface
      */
     private $paginator;
+    /**
+     * @var SerieProvider
+     */
+    private $serieProvider;
 
     public function __construct(
-        SeriesProvider $seriesProvider,
-        SerieDTOByApiBuilder $serieDTOByApiBuilder,
+        SerieByApiProvider $serieByApiProvider,
+        SerieDTOBuilder $SerieDTOBuilder,
         SerieFactory $serieFactory,
         serieManager $serieManager,
         FavoriteRepository $favoriteRepository,
         SerieRepository $serieRepository,
-        Paginator $paginator
+        Paginator $paginator,
+        SerieProvider $serieProvider
     ) {
-        $this->seriesProvider = $seriesProvider;
-        $this->serieDTOByApiBuilder = $serieDTOByApiBuilder;
+        $this->serieByApiProvider = $serieByApiProvider;
+        $this->SerieDTOBuilder = $SerieDTOBuilder;
         $this->serieFactory = $serieFactory;
         $this->serieManager = $serieManager;
         $this->favoriteRepository = $favoriteRepository;
         $this->serieRepository = $serieRepository;
         $this->paginator = $paginator;
+        $this->serieProvider = $serieProvider;
     }
 
     /**
@@ -93,9 +101,9 @@ class SeriesController extends BaseController
                 'search' => $search->getName()
             ]);
         }
-        $betaseries = $this->seriesProvider->provideMostPopularSeries();
+        $betaseries = $this->serieByApiProvider->provideMostPopularSeries();
 
-        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOByApiBuilder::Index);
+        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOBuilder::Index);
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,
@@ -115,8 +123,8 @@ class SeriesController extends BaseController
      */
     public function show(string $id): Response
     {
-        $serie = $this->seriesProvider->provideSerieBy($id);
-        $serie = $this->serieDTOByApiBuilder->switchAndBuildBetaserieInfo($serie, SerieDTOByApiBuilder::Index);
+        $serie = $this->serieByApiProvider->provideSerieBy($id);
+        $serie = $this->SerieDTOBuilder->switchAndBuildSerieInfo($serie, SerieDTOBuilder::Index);
 
         return $this->render('serie/_serie.html.twig', [
             'serie' => $serie
@@ -134,7 +142,7 @@ class SeriesController extends BaseController
      */
     public function add(string $id): Serie
     {
-        $serieInfo = $this->seriesProvider->provideSerieBy($id);
+        $serieInfo = $this->serieByApiProvider->provideSerieBy($id);
         $serie = $this->serieFactory->buildByApi($serieInfo);
 
         $this->serieManager->saveSerie($serie);
@@ -173,8 +181,8 @@ class SeriesController extends BaseController
             ]);
         }
 
-        $betaseries = $this->seriesProvider->searchSerie($search);
-        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOByApiBuilder::Search);
+        $betaseries = $this->serieByApiProvider->searchSerie($search);
+        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOBuilder::Search);
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,
@@ -195,5 +203,36 @@ class SeriesController extends BaseController
         $form->handleRequest($request);
 
         return $form;
+    }
+
+    /**
+     * @Route("/serie/favorites", name="serie.favorites")
+     * @param Request $request
+     * @return Response
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function listFavorite(Request $request): Response
+    {
+        $form = $this->handleForm($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form->getData();
+
+            return $this->redirectToRoute('serie.search', [
+                'search' => $search->getName()
+            ]);
+        }
+        $favoriteSeries = $this->serieProvider->provideFavoritesSeries();
+
+        $series = $this->paginator->paginateSeries($favoriteSeries, $request, SerieDTOBuilder::DoctrineSerie);
+
+        return $this->render('pages/home.html.twig', [
+            'series' => $series,
+            'current_menu' => self::Favorites,
+            'form' => $form->createView()
+        ]);
     }
 }

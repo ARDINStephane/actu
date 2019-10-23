@@ -3,15 +3,17 @@
 namespace App\Application\Series\DTO;
 
 
-use App\Api\BetaseriesApi\Provider\SeriesProvider;
+use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
+use App\Application\Common\Entity\Serie;
 use Cocur\Slugify\Slugify;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class SerieDTOByApiBuilder
+class SerieDTOBuilder
 {
     const Index = 'index';
     const Search = 'search';
+    const DoctrineSerie = 'DoctrineSerie';
 
     /**
      * @var RouterInterface
@@ -22,14 +24,14 @@ class SerieDTOByApiBuilder
      */
     private $tokenStorage;
     /**
-     * @var SeriesProvider
+     * @var SerieByApiProvider
      */
     private $seriesProvider;
 
     public function __construct(
         RouterInterface $router,
         TokenStorageInterface $tokenStorage,
-        SeriesProvider $seriesProvider
+        SerieByApiProvider $seriesProvider
     ) {
         $this->router = $router;
         $this->tokenStorage = $tokenStorage;
@@ -45,11 +47,14 @@ class SerieDTOByApiBuilder
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function switchAndBuildBetaserieInfo(array $serie, string $tag): SerieCardDTO
+    public function switchAndBuildSerieInfo($serie, string $tag): SerieCardDTO
     {
         switch ($tag) {
             case self::Index:
                 $serieDto = $this->build($serie);
+                break;
+            case self::DoctrineSerie:
+                $serieDto = $this->buildDoctrineSerie($serie);
                 break;
             case self::Search:
                 $betaSerie = $this->seriesProvider->provideSerieBy($serie['id']);
@@ -82,6 +87,53 @@ class SerieDTOByApiBuilder
         $description= $serie['description'];
         $note= $serie['notes'];
         $status= $serie['status'];
+        $serieShow = $this->router->generate('serie.show', ['id' => $id]);
+        $isfavorite = $this->isUsersFavorite($id);
+        $toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $id]);
+
+        return new SerieCardDTO(
+            $id,
+            $title,
+            $slug,
+            $alias,
+            $images,
+            $year,
+            $origin,
+            $genre,
+            $numberOfSeasons,
+            $seasonsDetails,
+            $numberOfEpisodes,
+            $lastEpisode,
+            $description,
+            $note,
+            $status,
+            $serieShow,
+            $isfavorite,
+            $toggleFavorite
+        );
+    }
+
+    /**
+     * @param Serie $serie
+     * @return SerieCardDTO
+     */
+    protected function buildDoctrineSerie($serie): SerieCardDTO
+    {
+        $id = $serie->getId();
+        $title= $serie->getTitle();
+        $slug = $this->slugify($title);
+        $alias= $serie->getAlias();
+        $images= $serie->getImages();
+        $year= $serie->getYear();
+        $origin= $serie->getOrigin();
+        $genre= $serie->getGenre();
+        $numberOfSeasons= $serie->getNumberOfSeasons();
+        $seasonsDetails= $serie->getSeasonsDetails();
+        $numberOfEpisodes= $serie->getNumberOfEpisodes();
+        $lastEpisode= $this->getLastEpisode($seasonsDetails);
+        $description= $serie->getDescription();
+        $note= $serie->getNote();
+        $status= $serie->getStatus();
         $serieShow = $this->router->generate('serie.show', ['id' => $id]);
         $isfavorite = $this->isUsersFavorite($id);
         $toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $id]);

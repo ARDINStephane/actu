@@ -155,7 +155,7 @@ class DoctrineEpisode implements Episode
      */
     public function getImages(): ?array
     {
-        return json_decode($this->images);
+        return json_decode($this->images, true);
     }
 
     /**
@@ -209,7 +209,7 @@ class DoctrineEpisode implements Episode
      */
     public function getNote(): ?array
     {
-        return json_decode($this->note);
+        return json_decode($this->note, true);
     }
 
     /**

@@ -7,10 +7,10 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpClient\CurlHttpClient;
 
 /**
- * Class SeriesProvider
+ * Class SerieByApiProvider
  * @package App\Api\BetaseriesApi\Provider
  */
-class SeriesProvider
+class SerieByApiProvider
 {
     const GetMethod = 'GET';
     /**
@@ -19,7 +19,7 @@ class SeriesProvider
     private $params;
 
     /**
-     * SeriesProvider constructor.
+     * SerieByApiProvider constructor.
      * @param ParameterBagInterface $params
      */
     public function __construct(ParameterBagInterface $params)

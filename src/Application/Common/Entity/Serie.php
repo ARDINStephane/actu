@@ -96,6 +96,17 @@ interface Serie
     public function setGenre(?array $genre): Serie;
 
     /**
+     * @return string|null
+     */
+    public function getNumberOfSeasons(): ?string;
+
+    /**
+     * @param string|null $numberOfSeasons
+     * @return Serie
+     */
+    public function setNumberOfSeasons(?string $numberOfSeasons): Serie;
+
+    /**
      * @return array|null
      */
     public function getSeasonsDetails(): ?array;
