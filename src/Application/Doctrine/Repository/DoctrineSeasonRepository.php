@@ -2,14 +2,14 @@
 
 namespace App\Application\Doctrine\Repository;
 
-use App\Application\Common\Repository\SerieRepository;
-use App\Application\Doctrine\Entity\DoctrineSerie;
+use App\Application\Common\Repository\SeasonRepository;
+use App\Application\Doctrine\Entity\DoctrineSeason;
 
 /**
- * Class DoctrineSerieRepository
+ * Class DoctrineSeasonRepository
  * @package App\Application\Doctrine\Repository
  */
-class DoctrineSeasonRepository extends DoctrineBaseRepository implements SerieRepository
+class DoctrineSeasonRepository extends DoctrineBaseRepository implements SeasonRepository
 {
     protected $class = DoctrineSeason::class;
 }

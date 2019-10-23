@@ -3,8 +3,8 @@
 namespace App\Application\Common\Repository;
 
 /**
- * Interface SeasonRepository
+ * Interface UserRepository
  * @package App\Application\Common\Repository
  */
-interface SeasonRepository extends BaseRepository
+interface UserRepository extends BaseRepository
 {}

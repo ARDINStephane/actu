@@ -89,3 +89,8 @@ App\Application\Doctrine\Entity\DoctrineSerie:
             orphanRemoval: true
             cascade: ["persist"]
             nullable: true
+        favorites:
+            targetEntity: DoctrineFavorite
+            orphanRemoval: true
+            mappedBy: serie
+            cascade: ["persist"]

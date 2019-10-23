@@ -127,7 +127,7 @@ class DoctrineSeason implements Season
      */
     public function getImages(): ?array
     {
-        return $this->images;
+        return json_decode($this->images, true);
     }
 
     /**
@@ -136,7 +136,7 @@ class DoctrineSeason implements Season
      */
     public function setImages(?array $images): Season
     {
-        $this->images = $images;
+        $this->images = json_encode($images);
         return $this;
     }
 
@@ -181,7 +181,7 @@ class DoctrineSeason implements Season
      */
     public function getNote(): ?array
     {
-        return $this->note;
+        return json_decode($this->note, true);
     }
 
     /**
@@ -190,7 +190,7 @@ class DoctrineSeason implements Season
      */
     public function setNote(?array $note): Season
     {
-        $this->note = $note;
+        $this->note = json_encode($note);
         return $this;
     }
 
@@ -335,5 +335,13 @@ class DoctrineSeason implements Season
     {
         $this->lastEpisodeSeen = $lastEpisodeSeen;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getId();
     }
 }

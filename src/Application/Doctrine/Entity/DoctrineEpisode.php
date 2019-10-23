@@ -155,7 +155,7 @@ class DoctrineEpisode implements Episode
      */
     public function getImages(): ?array
     {
-        return $this->images;
+        return json_decode($this->images, true);
     }
 
     /**
@@ -164,7 +164,7 @@ class DoctrineEpisode implements Episode
      */
     public function setImages(?array $images): Episode
     {
-        $this->images = $images;
+        $this->images = json_encode($images);
         return $this;
     }
 
@@ -209,7 +209,7 @@ class DoctrineEpisode implements Episode
      */
     public function getNote(): ?array
     {
-        return $this->note;
+        return json_decode($this->note, true);
     }
 
     /**
@@ -218,7 +218,7 @@ class DoctrineEpisode implements Episode
      */
     public function setNote(?array $note): Episode
     {
-        $this->note = $note;
+        $this->note = json_encode($note);
         return $this;
     }
 
@@ -328,5 +328,12 @@ class DoctrineEpisode implements Episode
     {
         $this->serie = $serie;
         return $this;
+    }
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getId();
     }
 }

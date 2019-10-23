@@ -3,7 +3,7 @@
 namespace App\Application\Common\Repository;
 
 /**
- * Interface SerieRepository
+ * Interface EpisodeRepository
  * @package App\Application\Common\Repository
  */
 interface EpisodeRepository extends BaseRepository
