@@ -5,3 +5,4 @@ imports:
 parameters:
     locale: 'fr'
     base_url: 'http://localhost:8000'
+    clientId: '%env(CLIENT_ID)%'
