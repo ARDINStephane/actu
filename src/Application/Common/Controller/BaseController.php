@@ -22,7 +22,7 @@ class BaseController extends AbstractController
     protected function findByRepository(BaseRepository $repository, $id)
     {
         $entity = $repository->find($id);
-        $this->ifNotFound404($entity);
+        //$this->ifNotFound404($entity);
 
         return $entity;
     }

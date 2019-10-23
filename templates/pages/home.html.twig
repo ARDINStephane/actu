@@ -1,9 +1,8 @@
 {% extends 'base.html.twig' %}
-
+    {% block jumbotronc %}
+        <h1 class="display-4">Les séries les plus populaires</h1>
+    {% endblock %}
 {% block body %}
-    <div class="jumbotron text-center">
-        <h1>Les séries les plus populaires</h1>
-    </div>
     <div class="container">
         <div class="flex row">
             {% for serie in  series %}
@@ -11,6 +10,9 @@
                     {% include 'serie/_serie.html.twig' %}
                 </div>
             {% endfor %}
+        </div>
+        <div class="pagination">
+            {{ knp_pagination_render(series) }}
         </div>
     </div>
 {% endblock %}
