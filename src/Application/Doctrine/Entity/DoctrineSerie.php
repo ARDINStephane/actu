@@ -2,6 +2,8 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use App\Application\Common\Entity\Favorite;
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
 use App\Application\Common\Entity\Serie;
@@ -12,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class DoctrineSerie
- * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\SerieRepository")
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\DoctrineSerieRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */
@@ -98,19 +100,25 @@ class DoctrineSerie implements Serie
     private $createdAt;
 
     /**
-     * @OneToMany(targetEntity="DoctrineSeason", mappedBy="serie", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="DoctrineSeason", mappedBy="serie", cascade={"persist"}, orphanRemoval=true)
      */
     private $seasons;
 
     /**
-     * @OneToMany(targetEntity="DoctrineEpisode", mappedBy="serie", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="DoctrineEpisode", mappedBy="serie", cascade={"persist"}, orphanRemoval=true)
      */
     private $episodes;
+
+    /**
+     * @OneToMany(targetEntity="DoctrineFavorite", mappedBy="serie", cascade={"persist"}, orphanRemoval=true)
+     */
+    private $favorites;
 
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
         $this->episodes = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     /**
@@ -154,7 +162,7 @@ class DoctrineSerie implements Serie
      */
     public function getAlias(): ?array
     {
-        return $this->alias;
+        return json_decode($this->alias, true);
     }
 
     /**
@@ -181,7 +189,7 @@ class DoctrineSerie implements Serie
      */
     public function setAlias(?array $alias): Serie
     {
-        $this->alias = $alias;
+        $this->alias = json_encode($alias);
         return $this;
     }
 
@@ -190,7 +198,7 @@ class DoctrineSerie implements Serie
      */
     public function getImages(): ?array
     {
-        return $this->images;
+        return json_decode($this->images, true);
     }
 
     /**
@@ -199,7 +207,7 @@ class DoctrineSerie implements Serie
      */
     public function setImages(?array $images): Serie
     {
-        $this->images = $images;
+        $this->images = json_encode($images);
         return $this;
     }
 
@@ -244,7 +252,7 @@ class DoctrineSerie implements Serie
      */
     public function getGenre(): ?array
     {
-        return $this->genre;
+        return json_decode($this->genre, true);
     }
 
     /**
@@ -253,7 +261,7 @@ class DoctrineSerie implements Serie
      */
     public function setGenre(?array $genre): Serie
     {
-        $this->genre = $genre;
+        $this->genre = json_encode($genre);
         return $this;
     }
 
@@ -269,7 +277,7 @@ class DoctrineSerie implements Serie
      * @param string|null $numberOfSeasons
      * @return Serie
      */
-    public function setNumberOfSeasons(?string $numberOfSeasons): SerieCardDTO
+    public function setNumberOfSeasons(?string $numberOfSeasons): Serie
     {
         $this->numberOfSeasons = $numberOfSeasons;
         return $this;
@@ -280,7 +288,7 @@ class DoctrineSerie implements Serie
      */
     public function getSeasonsDetails(): ?array
     {
-        return $this->seasonsDetails;
+        return json_decode($this->seasonsDetails, true);
     }
 
     /**
@@ -289,7 +297,7 @@ class DoctrineSerie implements Serie
      */
     public function setSeasonsDetails(?array $seasonsDetails): Serie
     {
-        $this->seasonsDetails = $seasonsDetails;
+        $this->seasonsDetails = json_encode($seasonsDetails);
         return $this;
     }
 
@@ -352,7 +360,7 @@ class DoctrineSerie implements Serie
      */
     public function getNote(): ?array
     {
-        return $this->note;
+        return json_decode($this->note, true);
     }
 
     /**
@@ -361,7 +369,7 @@ class DoctrineSerie implements Serie
      */
     public function setNote(?array $note): Serie
     {
-        $this->note = $note;
+        $this->note = json_encode($note);
         return $this;
     }
 
@@ -521,5 +529,47 @@ class DoctrineSerie implements Serie
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Favorite[]
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function addFavorite(Favorite $favorite): Serie
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites[] = $favorite;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function removeFavorite(Favorite $favorite): Serie
+    {
+        if ($this->favorites->contains($favorite)) {
+            $this->favorites->removeElement($favorite);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getId();
     }
 }

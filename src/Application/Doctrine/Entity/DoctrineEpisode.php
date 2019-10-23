@@ -2,6 +2,7 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
 use App\Application\Common\Entity\Serie;
@@ -10,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Class DoctrineEpisode
- * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\EpisodeRepository")
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\DoctrineEpisodeRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */
@@ -30,6 +31,10 @@ class DoctrineEpisode implements Episode
      * @var string
      */
     private $slug;
+    /**
+     * @var string
+     */
+    private $number;
     /**
      * @var array|null
      */
@@ -128,11 +133,29 @@ class DoctrineEpisode implements Episode
     }
 
     /**
+     * @return string
+     */
+    public function getNumber(): string
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param string $number
+     * @return DoctrineEpisode
+     */
+    public function setNumber(string $number): Episode
+    {
+        $this->number = $number;
+        return $this;
+    }
+
+    /**
      * @return array|null
      */
     public function getImages(): ?array
     {
-        return $this->images;
+        return json_decode($this->images, true);
     }
 
     /**
@@ -141,7 +164,7 @@ class DoctrineEpisode implements Episode
      */
     public function setImages(?array $images): Episode
     {
-        $this->images = $images;
+        $this->images = json_encode($images);
         return $this;
     }
 
@@ -186,7 +209,7 @@ class DoctrineEpisode implements Episode
      */
     public function getNote(): ?array
     {
-        return $this->note;
+        return json_decode($this->note, true);
     }
 
     /**
@@ -195,7 +218,7 @@ class DoctrineEpisode implements Episode
      */
     public function setNote(?array $note): Episode
     {
-        $this->note = $note;
+        $this->note = json_encode($note);
         return $this;
     }
 
@@ -305,5 +328,12 @@ class DoctrineEpisode implements Episode
     {
         $this->serie = $serie;
         return $this;
+    }
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getId();
     }
 }

@@ -96,6 +96,17 @@ interface Serie
     public function setGenre(?array $genre): Serie;
 
     /**
+     * @return string|null
+     */
+    public function getNumberOfSeasons(): ?string;
+
+    /**
+     * @param string|null $numberOfSeasons
+     * @return Serie
+     */
+    public function setNumberOfSeasons(?string $numberOfSeasons): Serie;
+
+    /**
      * @return array|null
      */
     public function getSeasonsDetails(): ?array;
@@ -246,4 +257,25 @@ interface Serie
      * @return Serie
      */
     public function removeEpisodes(Episode $episode): Serie;
+
+    /**
+     * @return string
+     */
+    public function __toString(): string;
+    /**
+     * @return Collection|Favorite[]
+     */
+    public function getFavorites(): Collection;
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function addFavorite(Favorite $favorite): Serie;
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function removeFavorite(Favorite $favorite): Serie;
 }

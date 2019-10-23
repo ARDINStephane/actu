@@ -2,6 +2,7 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,8 +14,8 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Class SDoctrineeason
- * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\EpisodeRepository")
+ * Class DoctrineSeason
+ * @ORM\Entity(repositoryClass="App\Application\Doctrine\Repository\DoctrineSeasonRepository")
  * @UniqueEntity("slug")
  * @package App\Application\Doctrine\Entity
  */
@@ -126,7 +127,7 @@ class DoctrineSeason implements Season
      */
     public function getImages(): ?array
     {
-        return $this->images;
+        return json_decode($this->images, true);
     }
 
     /**
@@ -135,7 +136,7 @@ class DoctrineSeason implements Season
      */
     public function setImages(?array $images): Season
     {
-        $this->images = $images;
+        $this->images = json_encode($images);
         return $this;
     }
 
@@ -180,7 +181,7 @@ class DoctrineSeason implements Season
      */
     public function getNote(): ?array
     {
-        return $this->note;
+        return json_decode($this->note, true);
     }
 
     /**
@@ -189,7 +190,7 @@ class DoctrineSeason implements Season
      */
     public function setNote(?array $note): Season
     {
-        $this->note = $note;
+        $this->note = json_encode($note);
         return $this;
     }
 
@@ -334,5 +335,13 @@ class DoctrineSeason implements Season
     {
         $this->lastEpisodeSeen = $lastEpisodeSeen;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getId();
     }
 }
