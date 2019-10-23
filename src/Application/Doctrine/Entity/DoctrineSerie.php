@@ -2,6 +2,7 @@
 
 namespace App\Application\Doctrine\Entity;
 
+use App\Application\Common\Entity\Favorite;
 use Doctrine\ORM\Mapping as ORM;
 use App\Application\Common\Entity\Episode;
 use App\Application\Common\Entity\Season;
@@ -99,19 +100,25 @@ class DoctrineSerie implements Serie
     private $createdAt;
 
     /**
-     * @OneToMany(targetEntity="DoctrineSeason", mappedBy="serie", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="DoctrineSeason", mappedBy="serie", cascade={"persist"}, orphanRemoval=true)
      */
     private $seasons;
 
     /**
-     * @OneToMany(targetEntity="DoctrineEpisode", mappedBy="serie", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="DoctrineEpisode", mappedBy="serie", cascade={"persist"}, orphanRemoval=true)
      */
     private $episodes;
+
+    /**
+     * @OneToMany(targetEntity="DoctrineFavorite", mappedBy="serie", cascade={"persist"}, orphanRemoval=true)
+     */
+    private $favorites;
 
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
         $this->episodes = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
     }
 
     /**
@@ -155,7 +162,7 @@ class DoctrineSerie implements Serie
      */
     public function getAlias(): ?array
     {
-        return json_decode($this->alias);
+        return json_decode($this->alias, true);
     }
 
     /**
@@ -191,7 +198,7 @@ class DoctrineSerie implements Serie
      */
     public function getImages(): ?array
     {
-        return json_decode($this->images);
+        return json_decode($this->images, true);
     }
 
     /**
@@ -245,7 +252,7 @@ class DoctrineSerie implements Serie
      */
     public function getGenre(): ?array
     {
-        return json_decode($this->genre);
+        return json_decode($this->genre, true);
     }
 
     /**
@@ -281,7 +288,7 @@ class DoctrineSerie implements Serie
      */
     public function getSeasonsDetails(): ?array
     {
-        return json_decode($this->seasonsDetails);
+        return json_decode($this->seasonsDetails, true);
     }
 
     /**
@@ -353,7 +360,7 @@ class DoctrineSerie implements Serie
      */
     public function getNote(): ?array
     {
-        return json_decode($this->note);
+        return json_decode($this->note, true);
     }
 
     /**
@@ -519,6 +526,40 @@ class DoctrineSerie implements Serie
     {
         if ($this->episodes->contains($episode)) {
             $this->episodes->removeElement($episode);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Favorite[]
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function addFavorite(Favorite $favorite): Serie
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites[] = $favorite;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return Serie
+     */
+    public function removeFavorite(Favorite $favorite): Serie
+    {
+        if ($this->favorites->contains($favorite)) {
+            $this->favorites->removeElement($favorite);
         }
 
         return $this;

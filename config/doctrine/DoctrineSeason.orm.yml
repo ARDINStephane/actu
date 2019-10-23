@@ -49,6 +49,8 @@ App\Application\Doctrine\Entity\DoctrineSeason:
             joinColumn:
                 name: serie
                 referencedColumnName: id
+            inversedBy: seasons
+            cascade: ["persist"]
             nullable: true
     oneToMany:
         episodes:
@@ -60,7 +62,7 @@ App\Application\Doctrine\Entity\DoctrineSeason:
     oneToOne:
         lastEpisodeSeen:
             targetEntity: DoctrineEpisode
-            inversedBy: serie
+            inversedBy: season
             joinColumn:
                 name: lastEpisodeSeen
                 referencedColumnName: id
