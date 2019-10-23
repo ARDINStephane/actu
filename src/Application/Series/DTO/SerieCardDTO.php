@@ -3,6 +3,10 @@
 namespace App\Application\Series\DTO;
 
 
+/**
+ * Class SerieCardDTO
+ * @package App\Application\Series\DTO
+ */
 class SerieCardDTO
 {
     /**
