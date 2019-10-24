@@ -2,6 +2,7 @@
 
 namespace App\Application\Series\Provider;
 
+use App\Application\Common\Entity\User;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Series\DTO\SerieDTOBuilder;
 
@@ -36,11 +37,14 @@ class SerieProvider
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function provideFavoritesSeries(): array
+    public function provideFavoritesSeries($user): array
     {
+        if(!isset($user)) {
+            return [];
+        }
         $favoritesSeriesDto = [];
         
-        $favoritesSeries = $this->serieRepository->findAll();
+        $favoritesSeries = $this->serieRepository->findFavoritesSeries($user);
 
         foreach($favoritesSeries as $serie) {
             $favoritesSeriesDto[] = $this->serieDTOBuilder->switchAndBuildSerieInfo($serie, $this->serieDTOBuilder::DoctrineSerie);

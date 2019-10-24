@@ -207,7 +207,8 @@ class SeriesController extends BaseController
     {
         $form = $this->handleForm($request);
 
-        $favoriteSeries = $this->serieProvider->provideFavoritesSeries();
+        $user = $this->getUser();
+        $favoriteSeries = $this->serieProvider->provideFavoritesSeries($user);
 
         $series = $this->paginator->paginateSeries($favoriteSeries, $request, SerieDTOBuilder::DoctrineSerie);
 

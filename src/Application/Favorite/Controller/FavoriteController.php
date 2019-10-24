@@ -41,7 +41,7 @@ class FavoriteController extends BaseController
     }
 
     /**
-     * @Route("/toggle_favorite/{lastRoute}/{id}/{search}", name="toggle_favorite")
+     * @Route("/toggle.favorite/{lastRoute}/{id}/{search}", name="toggle.favorite")
      * @param string $lastRoute
      * @param string $id
      * @param string|null $search
@@ -66,7 +66,10 @@ class FavoriteController extends BaseController
         } else {
             $favorite->removeFromAssociations($user, $serie);
             $this->favoriteRepository->delete($favorite->getId());
-            $this->seriesController->delete($id);
+
+            if(count($serie->getFavorites()) == 0) {
+                $this->seriesController->delete($id);
+            }
         }
         return $this->redirectToRoute($lastRoute,[
             'id' => $id,
