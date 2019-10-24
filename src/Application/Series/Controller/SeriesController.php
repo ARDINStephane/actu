@@ -94,13 +94,6 @@ class SeriesController extends BaseController
     {
         $form = $this->handleForm($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $search = $form->getData();
-
-            return $this->redirectToRoute('serie.search', [
-                'search' => $search->getName()
-            ]);
-        }
         $betaseries = $this->serieByApiProvider->provideMostPopularSeries();
 
         $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOBuilder::Index);
@@ -121,13 +114,16 @@ class SeriesController extends BaseController
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function show(string $id): Response
+    public function show(string $id, Request $request): Response
     {
+        $form = $this->handleForm($request);
+
         $serie = $this->serieByApiProvider->provideSerieBy($id);
         $serie = $this->SerieDTOBuilder->switchAndBuildSerieInfo($serie, SerieDTOBuilder::Index);
 
-        return $this->render('serie/_serie.html.twig', [
-            'serie' => $serie
+        return $this->render('pages/show_serie.html.twig', [
+            'serie' => $serie,
+            'form' => $form->createView()
         ]);
     }
 
@@ -161,25 +157,18 @@ class SeriesController extends BaseController
     }
 
     /**
-     * @Route("/serie/search/{search}", name="serie.search")
-     * @param string $search
+     * @Route("/serie/search/", name="serie.search")
      * @return Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function search(string $search, Request $request): Response
+    public function search(Request $request): Response
     {
+
         $form = $this->handleForm($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $search = $form->getData();
-
-            return $this->redirectToRoute('serie.search', [
-                'search' => $search->getName()
-            ]);
-        }
+        $search = $request->query->get('search');
 
         $betaseries = $this->serieByApiProvider->searchSerie($search);
         $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOBuilder::Search);
@@ -218,13 +207,6 @@ class SeriesController extends BaseController
     {
         $form = $this->handleForm($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $search = $form->getData();
-
-            return $this->redirectToRoute('serie.search', [
-                'search' => $search->getName()
-            ]);
-        }
         $favoriteSeries = $this->serieProvider->provideFavoritesSeries();
 
         $series = $this->paginator->paginateSeries($favoriteSeries, $request, SerieDTOBuilder::DoctrineSerie);

@@ -89,7 +89,6 @@ class SerieDTOBuilder
         $status= $serie['status'];
         $serieShow = $this->router->generate('serie.show', ['id' => $id]);
         $isfavorite = $this->isUsersFavorite($id);
-        $toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $id]);
 
         return new SerieCardDTO(
             $id,
@@ -108,8 +107,7 @@ class SerieDTOBuilder
             $note,
             $status,
             $serieShow,
-            $isfavorite,
-            $toggleFavorite
+            $isfavorite
         );
     }
 
@@ -136,7 +134,6 @@ class SerieDTOBuilder
         $status= $serie->getStatus();
         $serieShow = $this->router->generate('serie.show', ['id' => $id]);
         $isfavorite = $this->isUsersFavorite($id);
-        $toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $id]);
 
         return new SerieCardDTO(
             $id,
@@ -155,8 +152,7 @@ class SerieDTOBuilder
             $note,
             $status,
             $serieShow,
-            $isfavorite,
-            $toggleFavorite
+            $isfavorite
         );
     }
 

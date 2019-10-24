@@ -2,7 +2,6 @@
 
 namespace App\Application\Search\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Search
@@ -13,23 +12,23 @@ class Search
     /**
      * @var string|null
      */
-    private $name;
+    private $search;
 
     /**
      * @return string|null
      */
-    public function getName(): ?string
+    public function getSearch(): ?string
     {
-        return $this->name;
+        return $this->search;
     }
 
     /**
-     * @param string|null $name
+     * @param string|null $search
      * @return Search
      */
-    public function setName(?string $name): Search
+    public function setSearch(?string $search): Search
     {
-        $this->name = $name;
+        $this->search = $search;
         return $this;
     }
 }
