@@ -13,7 +13,7 @@ class SearchType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, [
+            ->add('search', TextType::class, [
                 'required' => false,
                 'label' => false,
             ])
@@ -24,7 +24,7 @@ class SearchType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Search::class,
-            'method' => 'post',
+            'method' => 'get',
             'csrf_protection' => false,
         ]);
     }

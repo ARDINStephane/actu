@@ -7,6 +7,7 @@ use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Series\Controller\SeriesController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 
@@ -40,9 +41,17 @@ class FavoriteController extends BaseController
     }
 
     /**
-     * @Route("/toggle_favorite/{id}}", name="toggle_favorite")
+     * @Route("/toggle_favorite/{lastRoute}/{id}/{search}", name="toggle_favorite")
+     * @param string $lastRoute
+     * @param string $id
+     * @param string|null $search
+     * @return RedirectResponse
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function toggleFavorite(string $id)
+    public function toggleFavorite(string $lastRoute, string $id, string $search = null): RedirectResponse
     {
         $serie = $this->findByRepository($this->serieRepository,$id);
         $user = $this->getUser();
@@ -53,11 +62,15 @@ class FavoriteController extends BaseController
             }
             $favorite = $this->favoriteRepository->new($user, $serie);
             $this->favoriteRepository->save($favorite);
+
         } else {
             $favorite->removeFromAssociations($user, $serie);
             $this->favoriteRepository->delete($favorite->getId());
             $this->seriesController->delete($id);
         }
-        return $this->redirectToRoute('home.index');
+        return $this->redirectToRoute($lastRoute,[
+            'id' => $id,
+            'search' => $search
+        ]);
     }
 }

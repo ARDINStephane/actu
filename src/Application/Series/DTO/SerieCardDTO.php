@@ -74,10 +74,6 @@ class SerieCardDTO
      */
     private $serieShow;
     /**
-     * @var string|null
-     */
-    private $toggleFavorite;
-    /**
      * @var bool
      */
     private $isfavorite;
@@ -99,8 +95,7 @@ class SerieCardDTO
         ?array $note,
         ?string $status,
         ?string $serieShow,
-        bool $isfavorite,
-        ?string $toggleFavorite
+        bool $isfavorite
     ) {
         $this->id = $id;
         $this->title = $title;
@@ -118,7 +113,6 @@ class SerieCardDTO
         $this->note = $note;
         $this->status = $status;
         $this->serieShow = $serieShow;
-        $this->toggleFavorite = $toggleFavorite;
         $this->isfavorite = $isfavorite;
     }
 
@@ -427,24 +421,6 @@ class SerieCardDTO
     public function setSerieShow(?string $serieShow): SerieCardDTO
     {
         $this->serieShow = $serieShow;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getToggleFavorite(): ?string
-    {
-        return $this->toggleFavorite;
-    }
-
-    /**
-     * @param string|null $toggleFavorite
-     * @return SerieCardDTO
-     */
-    public function setToggleFavorite(?string $toggleFavorite): SerieCardDTO
-    {
-        $this->toggleFavorite = $toggleFavorite;
         return $this;
     }
 
