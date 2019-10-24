@@ -37,7 +37,7 @@ App\Application\Doctrine\Entity\DoctrineSerie:
             nullable: true
         seasonsDetails:
             type: array
-            length: 255
+            nullable: true
         numberOfEpisodes:
             type: string
             length: 255
