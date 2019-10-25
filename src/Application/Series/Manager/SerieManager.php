@@ -6,7 +6,7 @@ namespace App\Application\Series\Manager;
 use App\Application\Common\Entity\Serie;
 use App\Application\Common\Repository\SerieRepository;
 
-class serieManager
+class SerieManager
 {
     /**
      * @var SerieRepository

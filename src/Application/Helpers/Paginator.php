@@ -16,18 +16,18 @@ class Paginator
     /**
      * @var SerieDTOBuilder
      */
-    private $SerieDTOBuilder;
+    private $serieDTOBuilder;
     /**
      * @var PaginatorInterface
      */
     private $paginator;
 
     public function __construct(
-        SerieDTOBuilder $SerieDTOBuilder,
+        SerieDTOBuilder $serieDTOBuilder,
         PaginatorInterface $paginator
     )
     {
-        $this->SerieDTOBuilder = $SerieDTOBuilder;
+        $this->serieDTOBuilder = $serieDTOBuilder;
         $this->paginator = $paginator;
     }
 
@@ -36,7 +36,7 @@ class Paginator
         $paginated = [];
 
         foreach ($series as $serie) {
-            $paginated[] = $this->SerieDTOBuilder->switchAndBuildSerieInfo($serie, $tag);
+            $paginated[] = $this->serieDTOBuilder->switchAndBuildSerieInfo($serie, $tag);
         }
         $paginated = $this->paginator->paginate(
             $paginated,

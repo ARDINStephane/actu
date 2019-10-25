@@ -57,7 +57,7 @@ class SerieDTOBuilder
                 $serieDto = $this->buildDoctrineSerie($serie);
                 break;
             case self::Search:
-                $betaSerie = $this->seriesProvider->provideSerieBy($serie['id']);
+                $betaSerie = $this->seriesProvider->provideSerieByApi($serie['id']);
 
                 $serieDto = $this->build($betaSerie);
                 break;
@@ -72,6 +72,7 @@ class SerieDTOBuilder
      */
     protected function build(array $serie): SerieCardDTO
     {
+        //dd($serie['seasons_details'][0]);
         $id = $serie['id'];
         $title= $serie['original_title'];
         $slug = $this->slugify($title);
