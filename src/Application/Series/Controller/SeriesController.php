@@ -9,11 +9,10 @@ use App\Application\Common\Entity\Serie;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Helpers\Paginator;
-use App\Application\Search\Entity\Search;
+use App\Application\Search\Controller\SearchController;
 use App\Application\Series\DTO\SerieDTOBuilder;
 use App\Application\Series\Factory\SerieFactory;
-use App\Application\Series\Manager\serieManager;
-use App\Application\Search\Form\SearchType;
+use App\Application\Series\Manager\SerieManager;
 use App\Application\Series\Provider\SerieProvider;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,13 +34,13 @@ class SeriesController extends BaseController
     /**
      * @var SerieDTOBuilder
      */
-    private $SerieDTOBuilder;
+    private $serieDTOBuilder;
     /**
      * @var SerieFactory
      */
     private $serieFactory;
     /**
-     * @var serieManager
+     * @var SerieManager
      */
     private $serieManager;
     /**
@@ -60,25 +59,31 @@ class SeriesController extends BaseController
      * @var SerieProvider
      */
     private $serieProvider;
+    /**
+     * @var SearchController
+     */
+    private $searchController;
 
     public function __construct(
         SerieByApiProvider $serieByApiProvider,
-        SerieDTOBuilder $SerieDTOBuilder,
+        SerieDTOBuilder $serieDTOBuilder,
         SerieFactory $serieFactory,
-        serieManager $serieManager,
+        SerieManager $serieManager,
         FavoriteRepository $favoriteRepository,
         SerieRepository $serieRepository,
         Paginator $paginator,
-        SerieProvider $serieProvider
+        SerieProvider $serieProvider,
+        SearchController $searchController
     ) {
         $this->serieByApiProvider = $serieByApiProvider;
-        $this->SerieDTOBuilder = $SerieDTOBuilder;
+        $this->serieDTOBuilder = $serieDTOBuilder;
         $this->serieFactory = $serieFactory;
         $this->serieManager = $serieManager;
         $this->favoriteRepository = $favoriteRepository;
         $this->serieRepository = $serieRepository;
         $this->paginator = $paginator;
         $this->serieProvider = $serieProvider;
+        $this->searchController = $searchController;
     }
 
     /**
@@ -92,7 +97,7 @@ class SeriesController extends BaseController
      */
     public function index(Request $request): Response
     {
-        $form = $this->handleForm($request);
+        $form = $this->searchController->handleForm($request);
 
         $betaseries = $this->serieByApiProvider->provideMostPopularSeries();
 
@@ -116,10 +121,10 @@ class SeriesController extends BaseController
      */
     public function show(string $id, Request $request): Response
     {
-        $form = $this->handleForm($request);
+        $form = $this->searchController->handleForm($request);
 
-        $serie = $this->serieByApiProvider->provideSerieBy($id);
-        $serie = $this->SerieDTOBuilder->switchAndBuildSerieInfo($serie, SerieDTOBuilder::Index);
+        $serie = $this->serieByApiProvider->provideSerieByApi($id);
+        $serie = $this->serieDTOBuilder->switchAndBuildSerieInfo($serie, SerieDTOBuilder::Index);
 
         return $this->render('pages/show_serie.html.twig', [
             'serie' => $serie,
@@ -138,7 +143,7 @@ class SeriesController extends BaseController
      */
     public function add(string $id): Serie
     {
-        $serieInfo = $this->serieByApiProvider->provideSerieBy($id);
+        $serieInfo = $this->serieByApiProvider->provideSerieByApi($id);
         $serie = $this->serieFactory->buildByApi($serieInfo);
 
         $this->serieManager->saveSerie($serie);
@@ -157,44 +162,6 @@ class SeriesController extends BaseController
     }
 
     /**
-     * @Route("/serie/search/", name="serie.search")
-     * @return Response
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
-    public function search(Request $request): Response
-    {
-
-        $form = $this->handleForm($request);
-        $search = $request->query->get('search');
-
-        $betaseries = $this->serieByApiProvider->searchSerie($search);
-        $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOBuilder::Search);
-
-        return $this->render('pages/home.html.twig', [
-            'series' => $series,
-            'search' => $search,
-            'current_menu' => self::Home,
-            'form' => $form->createView()
-        ]);
-    }
-
-    /**
-     * @param Request $request
-     * @return \Symfony\Component\Form\FormInterface
-     */
-    protected function handleForm(Request $request)
-    {
-        $newSearch = new Search();
-        $form = $this->createForm(SearchType::class, $newSearch);
-        $form->handleRequest($request);
-
-        return $form;
-    }
-
-    /**
      * @Route("/serie/favorites", name="serie.favorites")
      * @param Request $request
      * @return Response
@@ -205,7 +172,7 @@ class SeriesController extends BaseController
      */
     public function listFavorite(Request $request): Response
     {
-        $form = $this->handleForm($request);
+        $form = $this->searchController->handleForm($request);
 
         $user = $this->getUser();
         $favoriteSeries = $this->serieProvider->provideFavoritesSeries($user);

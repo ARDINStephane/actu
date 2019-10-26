@@ -9,3 +9,12 @@ body {
     -webkit-box-orient: vertical;
 }
 
+.list-serie {
+    border:0px;
+    text-align: center;
+}
+
+.list-episode {
+    text-align: center;
+}
+

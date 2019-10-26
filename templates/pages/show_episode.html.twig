@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+    {% block jumbotronc %}
+        <h1 class="display-3">{{ episode.serie.title }}</h1>
+    {% endblock %}
+{% block body %}
+    <div class="container">
+        {% include 'episode/_episode.html.twig' %}
+    </div>
+{% endblock %}
+

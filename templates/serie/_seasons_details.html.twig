@@ -1,0 +1,16 @@
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="list-group ">
+            {% for season in serie.seasonsDetails %}
+                <div class="list-group-item list-group-item-warning">
+                <a href="#" class="list-group-item list-group-item-warning display-4 list-serie">Saison {{ season.number }}
+                        {% for episodeNumber in 1..season.episodes %}
+                            <a class="list-group-item {% if episodeNumber is divisible by(2) %}list-group-item-light {% else %}list-group-item-info {% endif %}
+list-episode" href={{ path('episode.show', { 'episodeNumber': episodeNumber, 'serieId': serie.id, 'seasonNumber': season.number }) }}>Episode {{ episodeNumber }}</a>
+                        {% endfor %}
+                </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

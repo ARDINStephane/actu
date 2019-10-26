@@ -3,11 +3,14 @@
 namespace App\Api\BetaseriesApi\Provider;
 
 
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpClient\CurlHttpClient;
+
 /**
  * Class SerieByApiProvider
  * @package App\Api\BetaseriesApi\Provider
  */
-class SerieByApiProvider extends ApiProvider
+class EpisodeByApiProvider extends ApiProvider
 {
     /**
      * @return array
@@ -25,34 +28,20 @@ class SerieByApiProvider extends ApiProvider
     }
 
     /**
-     * @param string $id
+     * @param string $episodeNumber
+     * @param string $serieId
+     * @param string $seasonNumber
      * @return array
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function provideSerieByApi(string $id): array
+    public function provideEpisodeByApi(string $episodeNumber, string $serieId, string $seasonNumber): array
     {
-        $url = 'https://api.betaseries.com/shows/display?id=' .$id;
-        $serie = $this->curlRequestResults(self::GetMethod, $url);
+        $url = 'https://api.betaseries.com/shows/episodes?id=' . $serieId . '&episode=' . $episodeNumber . '&season=' . $seasonNumber;
+        $episode = $this->curlRequestResults(self::GetMethod, $url);
 
-        return $serie['show'];
-    }
-
-    /**
-     * @param string $name
-     * @return array
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
-    public function searchSerie(string $name): array
-    {
-        $url = 'https://api.betaseries.com/search/all?query=' . $name . '&limit=24';
-        $series = $this->curlRequestResults(self::GetMethod, $url);
-
-        return $series['shows'];
+        return $episode['episodes'][0];
     }
 }
