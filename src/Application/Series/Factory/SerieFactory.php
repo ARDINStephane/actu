@@ -58,8 +58,6 @@ class SerieFactory
         $serie->setCreatedAt(new \DateTime());
         $serie->setSerieShow($this->router->generate('serie.show', ['id' => $id]));
 
-        //$toggleFavorite = $this->router->generate('toggle_favorite', ['id' => $serie]);
-
         return $serie;
     }
 
