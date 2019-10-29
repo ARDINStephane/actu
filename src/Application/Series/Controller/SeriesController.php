@@ -5,9 +5,7 @@ namespace App\Application\Series\Controller;
 
 use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
 use App\Application\Common\Controller\BaseController;
-use App\Application\Common\Entity\Favorite;
 use App\Application\Common\Entity\Serie;
-use App\Application\Common\Form\CheckEpisodeSeenType;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Episodes\Helpers\EpisodeHelper;
@@ -200,6 +198,10 @@ class SeriesController extends BaseController
         ]);
     }
 
+    /**
+     * @param SerieCardDTO $serieCardDTO
+     * @return array
+     */
     protected function buildEpisodeLink(SerieCardDTO $serieCardDTO): array
     {
         $serie['serieId'] = [$serieCardDTO->getId()];
