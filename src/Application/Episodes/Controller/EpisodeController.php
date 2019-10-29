@@ -60,7 +60,7 @@ class EpisodeController extends BaseController
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function show(string $episodeNumber, string $serieId,  Request $request, string $seasonNumber): Response
+    public function show(string $episodeNumber, string $serieId, string $seasonNumber, Request $request): Response
     {
         $form = $this->searchController->handleForm($request);
 

@@ -31,6 +31,18 @@ class DoctrineFavorite implements Favorite
      * @ManyToOne(targetEntity="DoctrineUser")
      */
     private $user;
+    /**
+     * @var bool
+     */
+    private $episodeSeen = false;
+    /**
+     * @var array|null
+     */
+    private $episodesSeen;
+    /**
+     * @var string
+     */
+    private $episodeCode;
 
     public function __construct(User $user, Serie $serie)
     {
@@ -124,5 +136,89 @@ class DoctrineFavorite implements Favorite
     public function __toString(): string
     {
         return (string) $this->getId();
+    }
+
+    /**
+     * @param $episodeCode
+     * @return bool
+     */
+    public function isEpisodeSeen(string $episodeCode): bool
+    {
+        if(in_array($episodeCode, $this->getEpisodesSeen())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param bool $episodeSeen
+     * @return Favorite
+     */
+    public function setEpisodeSeen(bool $episodeSeen): Favorite
+    {
+        $this->episodeSeen = $episodeSeen;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getEpisodesSeen(): array
+    {
+        if (!empty($this->episodesSeen)) {
+            return (json_decode($this->episodesSeen, true));
+        } else
+            return [];
+    }
+
+    /**
+     * @param string $episodeCode
+     * @return Favorite
+     */
+    public function addEpisodesSeen(string $episodeCode): Favorite
+    {
+        $episodesSeen = $this->getEpisodesSeen();
+        $episodesSeen[] = $episodeCode;
+        $this->episodesSeen = json_encode($episodesSeen);
+
+        return $this;
+    }
+
+    /**
+     * @param string $episodeCode
+     * @return bool
+     */
+    public function removeEpisodesSeen(string $episodeCode): bool
+    {
+        $key = array_search($episodeCode, $this->getEpisodesSeen(), true);
+        if ($key === false) {
+            return false;
+        }
+
+        $episodesSeen = json_decode($this->episodesSeen, true);
+        unset($episodesSeen[$key]);
+
+        $this->episodesSeen = json_encode($episodesSeen);
+
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEpisodeCode(): string
+    {
+        return $this->episodeCode;
+    }
+
+    /**
+     * @param string $episodeCode
+     * @return Favorite
+     */
+    public function setEpisodeCode(string $episodeCode): Favorite
+    {
+        $this->episodeCode = $episodeCode;
+        return $this;
     }
 }

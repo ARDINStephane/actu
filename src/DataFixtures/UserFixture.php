@@ -23,10 +23,12 @@ class UserFixture extends Fixture
     {
         $user = new DoctrineUser();
         $user->setUsername('toto')
-        ->setPassword($this->encoder->encodePassword($user, 'toto'));
+            ->setPassword($this->encoder->encodePassword($user, 'toto'))
+            ->setRoles(['ROLE_USER']);
         $user1 = new DoctrineUser();
         $user1->setUsername('admin')
-        ->setPassword($this->encoder->encodePassword($user, 'admin'));
+            ->setPassword($this->encoder->encodePassword($user, 'admin'))
+            ->setRoles(['ROLE_ADMIN']);
 
         $manager->persist($user);
         $manager->persist($user1);

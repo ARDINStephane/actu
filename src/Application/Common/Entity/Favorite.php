@@ -49,4 +49,44 @@ interface Favorite
      * @return Favorite
      */
     public function removeFromAssociations(User $user, Serie $serie): Favorite;
+
+    /**
+     * @param $episodeCode
+     * @return bool
+     */
+    public function isEpisodeSeen(string $episodeCode): bool;
+
+    /**
+     * @param bool $episodeSeen
+     * @return Favorite
+     */
+    public function setEpisodeSeen(bool $episodeSeen): Favorite;
+
+    /**
+     * @return array|null
+     */
+    public function getEpisodesSeen(): ?array;
+
+    /**
+     * @param string $episodeCode
+     * @return Favorite
+     */
+    public function addEpisodesSeen(string $episodeCode): Favorite;
+
+    /**
+     * @param string $episodeCode
+     * @return bool
+     */
+    public function removeEpisodesSeen(string $episodeCode): bool;
+
+    /**
+     * @return string
+     */
+    public function getEpisodeCode(): string;
+
+    /**
+     * @param string $episodeCode
+     * @return Favorite
+     */
+    public function setEpisodeCode(string $episodeCode): Favorite;
 }

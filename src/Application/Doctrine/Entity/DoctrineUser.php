@@ -37,6 +37,11 @@ class DoctrineUser implements UserInterface, User
      */
     private $favorites;
 
+    /**
+     * @var array|null
+     */
+    private $roles;
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
@@ -85,7 +90,18 @@ class DoctrineUser implements UserInterface, User
      */
     public function getRoles(): array
     {
-        return ['ROLE_ADMIN'];
+        return json_decode($this->roles);
+    }
+
+    /**
+     * @param array $roles
+     * @return User
+     */
+    public function setRoles(array $roles): User
+    {
+        $this->roles = json_encode($roles);
+
+        return $this;
     }
 
     /**
