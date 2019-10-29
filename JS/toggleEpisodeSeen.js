@@ -5,7 +5,6 @@ function onClickBtnSeen(event) {
     const icon = this.querySelector("i.js-seen");
 
     axios.get(url).then(function (response) {
-        console.log(response.data.seen);
         icon.textContent = response.data.seen;
         if (icon.classList.contains(response.data.oldClass)) {
             icon.classList.replace(response.data.oldClass, response.data.newClass);
