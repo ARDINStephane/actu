@@ -50,27 +50,31 @@ class FavoriteController extends BaseController
     }
 
     /**
-     * @Route("/toggle.favorite/{lastRoute}/{id}/{search}", name="toggle.favorite")
-     * @param string $lastRoute
+     * @Route("/toggle.favorite/{id}", name="toggle.favorite")
      * @param string $id
-     * @param string|null $search
-     * @return RedirectResponse
+     * @return Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function toggleFavorite(string $lastRoute, string $id, string $search = null): RedirectResponse
+    public function toggleFavorite(string $id): Response
     {
         $serie = $this->findByRepository($this->serieRepository,$id);
-        $user = $this->getUser();
+        $user = $this->checkConnectedUser();
         $favorite = $this->favoriteRepository->getFavorite($user, $id);
+
         if ($favorite == null) {
             if(empty($serie)) {
                 $serie = $this->seriesController->add($id);
             }
             $favorite = $this->favoriteRepository->new($user, $serie);
             $this->favoriteRepository->save($favorite);
+
+            $message = 'Ajouté dans les favoris';
+            $newClass = 'btn-danger';
+            $oldClass = 'btn-primary';
+            $label = 'Supprimer des favoris';
 
         } else {
             $favorite->removeFromAssociations($user, $serie);
@@ -79,11 +83,19 @@ class FavoriteController extends BaseController
             if(count($serie->getFavorites()) == 0) {
                 $this->seriesController->delete($id);
             }
+
+            $message = 'Retiré des favoris';
+            $newClass = 'btn-primary';
+            $oldClass = 'btn-danger';
+            $label = 'Ajouter en favori';
         }
-        return $this->redirectToRoute($lastRoute,[
-            'id' => $id,
-            'search' => $search
-        ]);
+
+        return $this->json([
+            'message' => $message,
+            'label' => $label,
+            'newClass' => $newClass,
+            'oldClass' => $oldClass
+        ], 200);
     }
 
     /**
@@ -91,14 +103,7 @@ class FavoriteController extends BaseController
      */
     public function setEpisodeSeenStatus(string $episodeNumber, string $serieId, string $seasonNumber, Request $request): Response
     {
-        $user = $this->getUser();
-
-        if(empty($user)) {
-            $message = 'Veuillez vous connecter';
-            $this->addFlash('danger',$message);
-
-            return $this->json(['message', $message], 403);
-        }
+        $user = $this->checkConnectedUser();
 
         $favorite = $this->favoriteRepository->getFavorite($user, $serieId);
         if(!$favorite) {
@@ -137,5 +142,22 @@ class FavoriteController extends BaseController
                 'newClass' => 'fa-check'
             ], 200);
         }
+    }
+
+    /**
+     * @return object|\Symfony\Component\HttpFoundation\JsonResponse|null
+     */
+    protected function checkConnectedUser()
+    {
+        $user = $this->getUser();
+
+        if(empty($user)) {
+            $message = 'Veuillez vous connecter';
+            $this->addFlash('danger',$message);
+
+            return $this->json(['message', $message], 403);
+        }
+
+        return $user;
     }
 }
