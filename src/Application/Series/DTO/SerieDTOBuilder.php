@@ -5,6 +5,7 @@ namespace App\Application\Series\DTO;
 
 use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
 use App\Application\Common\Entity\Serie;
+use App\Application\Episodes\Helpers\EpisodeHelper;
 use Cocur\Slugify\Slugify;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -27,15 +28,21 @@ class SerieDTOBuilder
      * @var SerieByApiProvider
      */
     private $seriesProvider;
+    /**
+     * @var EpisodeHelper
+     */
+    private $episodeHelper;
 
     public function __construct(
         RouterInterface $router,
         TokenStorageInterface $tokenStorage,
-        SerieByApiProvider $seriesProvider
+        SerieByApiProvider $seriesProvider,
+        EpisodeHelper $episodeHelper
     ) {
         $this->router = $router;
         $this->tokenStorage = $tokenStorage;
         $this->seriesProvider = $seriesProvider;
+        $this->episodeHelper = $episodeHelper;
     }
 
     /**
@@ -164,14 +171,8 @@ class SerieDTOBuilder
     protected function getLastEpisode($seasonsDetails): string
     {
         $lastSeason = end($seasonsDetails);
-        if (strlen($lastSeason['episodes'] < 10)) {
-            $lastSeason['episodes'] = '0' . $lastSeason['episodes'];
-        }
-        if (strlen($lastSeason['number'] < 10)) {
-            $lastSeason['number'] = '0' . $lastSeason['number'];
-        }
 
-        return $lastEpisode = 'S' . $lastSeason['number'] . ' E' . $lastSeason['episodes'];
+        return $this->episodeHelper->buildEpisodeCode($lastSeason['number'], $lastSeason['episodes']);
     }
 
     /**

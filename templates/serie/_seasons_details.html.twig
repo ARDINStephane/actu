@@ -1,14 +1,41 @@
 <div class="card mb-4">
     <div class="card-body">
         <div class="list-group ">
-            {% for season in serie.seasonsDetails %}
+            {% set seasonNumber = 0 %}
+            {% for season in serieDetails.seasons %}
+                {% set seasonNumber = seasonNumber + 1 %}
                 <div class="list-group-item list-group-item-warning">
-                <a href="#" class="list-group-item list-group-item-warning display-4 list-serie">Saison {{ season.number }}
-                        {% for episodeNumber in 1..season.episodes %}
-                            <a class="list-group-item {% if episodeNumber is divisible by(2) %}list-group-item-light {% else %}list-group-item-info {% endif %}
-list-episode" href={{ path('episode.show', { 'episodeNumber': episodeNumber, 'serieId': serie.id, 'seasonNumber': season.number }) }}>Episode {{ episodeNumber }}</a>
-                        {% endfor %}
-                </a>
+                <a href="#" class="list-group-item list-group-item-warning display-4 list-serie">Saison {{ seasonNumber }}</a>
+                    {% for episode in season %}
+                        <div class="list-group-item
+                                {% if episode.episode is divisible by(2) %}list-group-item-light
+                                {% else %}list-group-item-info
+                                {% endif %}
+                                list-episode">
+                        <a href={{ path('episode.show', {
+                                'episodeNumber': episode.episode,
+                                'serieId': serieDetails.serieId.0,
+                                'seasonNumber': episode.season
+                           }) }}
+                        >
+                            Episode {{ episode.episode }}
+                        </a>
+                        {% if is_granted('ROLE_USER') %}
+                            <a class="btn btn-link js-seens" href={{ path('set.episode.seen.status', {
+                                'episodeNumber': episode.episode,
+                                'serieId': serieDetails.serieId.0,
+                                'seasonNumber': episode.season
+                            }) }}
+                                >
+                                {% if episode.seen == ' A voir'%}
+                                    <i class="fas fa-times js-seen">{{ episode.seen }}</i>
+                                {% else %}
+                                    <i class="fas fa-check js-seen"> {{ episode.seen }}</i>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             {% endfor %}
         </div>

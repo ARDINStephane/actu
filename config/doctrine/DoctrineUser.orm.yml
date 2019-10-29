@@ -13,6 +13,9 @@ App\Application\Doctrine\Entity\DoctrineUser:
     password:
       type: string
       length: 255
+    roles:
+      type: array
+      default: 'ROLE_USER'
   oneToMany:
     favorites:
       targetEntity: DoctrineFavorite
