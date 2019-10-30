@@ -1,14 +1,55 @@
 <div class="card mb-4">
     <div class="card-body">
         <div class="list-group ">
-            {% for season in serie.seasonsDetails %}
-                <div class="list-group-item list-group-item-warning">
-                <a href="#" class="list-group-item list-group-item-warning display-4 list-serie">Saison {{ season.number }}
-                        {% for episodeNumber in 1..season.episodes %}
-                            <a class="list-group-item {% if episodeNumber is divisible by(2) %}list-group-item-light {% else %}list-group-item-info {% endif %}
-list-episode" href={{ path('episode.show', { 'episodeNumber': episodeNumber, 'serieId': serie.id, 'seasonNumber': season.number }) }}>Episode {{ episodeNumber }}</a>
-                        {% endfor %}
+            {% for season in serieDetails.seasons %}
+                <div class="list-group-item list-group-item-warning list-serie">
+                <a href="#" class="list-group-item-warning display-4 ">
+                    Saison {{ season.0.seasonNumber }}
                 </a>
+                {% if is_granted('ROLE_USER') %}
+                    <a class="btn btn-link js-seasons-seens"
+                       href={{ path('set.season.seen.status', {
+                        'serieId': serieDetails.serieId.0,
+                        'seasonNumber': season.0.seasonNumber,
+                    }) }}
+                    >
+                        {% if season.0.seasonSeen == ' Tout voir'%}
+                            <i class="fas fa-times js-season-seens js-season-seens-{{ season.0.seasonNumber }}" >{{ season.0.seasonSeen }}</i>
+                        {% else %}
+                            <i class="fas fa-check js-season-seens js-season-seens-{{ season.0.seasonNumber }}">{{ season.0.seasonSeen }}</i>
+                        {% endif %}
+                    </a>
+                {% endif %}
+                    {% for episode in season %}
+                        <div class="list-group-item
+                                {% if episode.episode is divisible by(2) %}list-group-item-light
+                                {% else %}list-group-item-info
+                                {% endif %}
+                                list-episode">
+                        <a href={{ path('episode.show', {
+                                'episodeNumber': episode.episode,
+                                'serieId': serieDetails.serieId.0,
+                                'seasonNumber': episode.season
+                           }) }}
+                        >
+                            Episode {{ episode.episode }}
+                        </a>
+                        {% if is_granted('ROLE_USER') %}
+                            <a class="btn btn-link js-seens" href={{ path('set.episode.seen.status', {
+                                'episodeNumber': episode.episode,
+                                'serieId': serieDetails.serieId.0,
+                                'seasonNumber': episode.season
+                            }) }}
+                                >
+                                {% if episode.seen == ' A voir'%}
+                                    <i class="fas fa-times js-seen js-seen-{{ episode.season }}">{{ episode.seen }}</i>
+                                {% else %}
+                                    <i class="fas fa-check js-seen js-seen-{{ episode.season }}"> {{ episode.seen }}</i>
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
             {% endfor %}
         </div>

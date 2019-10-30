@@ -2,6 +2,20 @@
     <div class="card-body">
         <h5 class="card-title">
             {{ episode.code }}
+            {% if is_granted('ROLE_USER') %}
+                <a class="btn btn-link js-seens" href={{ path('set.episode.seen.status', {
+                    'episodeNumber': episode.episodeNumber,
+                    'serieId': episode.serie.id,
+                    'seasonNumber': episode.seasonNumber
+                }) }}
+                >
+                    {% if episodeSeen == ' A voir'%}
+                        <i class="fas fa-times js-seen"> A voir</i>
+                    {% else %}
+                        <i class="fas fa-check js-seen"> Vu</i>
+                    {% endif %}
+                </a>
+            {% endif %}
         </h5>
         <img src="{{ episode.serie.images.show }}" alt="card-img-top" style="width: 100%; height:auto;">
         <div id="description">

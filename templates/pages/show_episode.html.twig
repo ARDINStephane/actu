@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
     {% block jumbotronc %}
-        <h1 class="display-3">{{ episode.serie.title }}</h1>
+        <h1 class="display-3">
+            <a href="">
+                <a href={{ path('serie.show', {'id':episode.serie.id}) }}>{{ episode.serie.title }}</a>
+            </a>
+        </h1>
     {% endblock %}
 {% block body %}
     <div class="container">

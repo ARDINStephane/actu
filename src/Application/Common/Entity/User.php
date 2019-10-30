@@ -42,6 +42,12 @@ interface User
     public function getRoles(): array;
 
     /**
+     * @param array $roles
+     * @return User
+     */
+    public function setRoles(array $roles): User;
+
+    /**
      * Returns the password used to authenticate the user.
      *
      * This should be the encoded password. On authentication, a plain-text

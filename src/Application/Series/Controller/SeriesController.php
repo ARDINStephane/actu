@@ -8,8 +8,10 @@ use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Entity\Serie;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
+use App\Application\Episodes\Helpers\EpisodeHelper;
 use App\Application\Helpers\Paginator;
 use App\Application\Search\Controller\SearchController;
+use App\Application\Series\DTO\SerieCardDTO;
 use App\Application\Series\DTO\SerieDTOBuilder;
 use App\Application\Series\Factory\SerieFactory;
 use App\Application\Series\Manager\SerieManager;
@@ -25,8 +27,12 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SeriesController extends BaseController
 {
-    const Home = "home";
-    const Favorites = "favorites";
+    const HOME = "home";
+    const USER = "user";
+    const TOSEE = " A voir";
+    const SEEALL = " Tout voir";
+    const SEEN = " Vu";
+    const ALLSEEN = " Tout vu";
     /**
      * @var SerieByApiProvider
      */
@@ -63,6 +69,10 @@ class SeriesController extends BaseController
      * @var SearchController
      */
     private $searchController;
+    /**
+     * @var EpisodeHelper
+     */
+    private $episodeHelper;
 
     public function __construct(
         SerieByApiProvider $serieByApiProvider,
@@ -73,7 +83,8 @@ class SeriesController extends BaseController
         SerieRepository $serieRepository,
         Paginator $paginator,
         SerieProvider $serieProvider,
-        SearchController $searchController
+        SearchController $searchController,
+        EpisodeHelper $episodeHelper
     ) {
         $this->serieByApiProvider = $serieByApiProvider;
         $this->serieDTOBuilder = $serieDTOBuilder;
@@ -84,6 +95,7 @@ class SeriesController extends BaseController
         $this->paginator = $paginator;
         $this->serieProvider = $serieProvider;
         $this->searchController = $searchController;
+        $this->episodeHelper = $episodeHelper;
     }
 
     /**
@@ -105,7 +117,7 @@ class SeriesController extends BaseController
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,
-            'current_menu' => self::Home,
+            'current_menu' => self::HOME,
             'form' => $form->createView()
         ]);
     }
@@ -121,21 +133,25 @@ class SeriesController extends BaseController
      */
     public function show(string $id, Request $request): Response
     {
+        $checkboxForms = null;
         $form = $this->searchController->handleForm($request);
 
         $serie = $this->serieByApiProvider->provideSerieByApi($id);
         $serie = $this->serieDTOBuilder->switchAndBuildSerieInfo($serie, SerieDTOBuilder::Index);
 
+        $serieDetails = $this->buildEpisodeLink($serie);
+
         return $this->render('pages/show_serie.html.twig', [
             'serie' => $serie,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'serieDetails' => $serieDetails
         ]);
     }
 
     /**
      * @Route("/serie/add/{id}", name="serie.add")
      * @param string $id
-     * @return Void
+     * @return Serie
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
@@ -181,8 +197,52 @@ class SeriesController extends BaseController
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,
-            'current_menu' => self::Favorites,
+            'current_menu' => self::USER,
             'form' => $form->createView()
         ]);
+    }
+
+    /**
+     * @param SerieCardDTO $serieCardDTO
+     * @return array
+     */
+    protected function buildEpisodeLink(SerieCardDTO $serieCardDTO): array
+    {
+        $serie['serieId'] = [$serieCardDTO->getId()];
+        $user = $this->getUser();
+        $favorite = $this->favoriteRepository->getFavorite($user, $serieCardDTO->getId());
+
+        foreach ($serieCardDTO->getSeasonsDetails() as $season) {
+            $seasonNumber = $season['number'];
+            $seasonSeen = self::ALLSEEN;
+
+            for ($i = 1; $i <= $season['episodes']; $i++) {
+                $episodeCode = $this->episodeHelper->buildEpisodeCode($seasonNumber, $i);
+
+                $episode = [
+                    'season' => $seasonNumber,
+                    'episode' => $i,
+                    'code' => $episodeCode,
+                    'seen' => self::TOSEE
+                ];
+
+                if(!empty($favorite)) {
+                    $checkSeen = $favorite->isEpisodeSeen($episodeCode);
+                    if ($checkSeen) {
+                        $seen = self::SEEN;
+                    } else {
+                        $seen = self::TOSEE;
+                        $seasonSeen = self::SEEALL;
+                    }
+                    $episode['seen'] = $seen;
+                }
+
+                $serie['seasons'][$seasonNumber][] = $episode;
+            }
+            $serie['seasons'][$seasonNumber][0]['seasonNumber'] = $seasonNumber;
+            $serie['seasons'][$seasonNumber][0]['seasonSeen'] = $seasonSeen;
+        }
+
+        return $serie;
     }
 }

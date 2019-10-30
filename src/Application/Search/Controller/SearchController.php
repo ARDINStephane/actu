@@ -8,7 +8,6 @@ use App\Application\Common\Controller\BaseController;
 use App\Application\Helpers\Paginator;
 use App\Application\Search\Entity\Search;
 use App\Application\Search\Form\SearchType;
-use App\Application\Search\Helper\SearchHelper;
 use App\Application\Series\Controller\SeriesController;
 use App\Application\Series\DTO\SerieDTOBuilder;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,7 +58,7 @@ class SearchController extends BaseController
         return $this->render('pages/home.html.twig', [
             'series' => $series,
             'search' => $search,
-            'current_menu' => SeriesController::Home,
+            'current_menu' => SeriesController::HOME,
             'form' => $form->createView()
         ]);
     }
