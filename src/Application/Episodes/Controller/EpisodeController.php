@@ -7,9 +7,9 @@ use App\Api\BetaseriesApi\Provider\EpisodeByApiProvider;
 use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
 use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Repository\FavoriteRepository;
+use App\Application\Episodes\Helpers\EpisodeHelper;
 use App\Application\Search\Controller\SearchController;
 use App\Application\Episodes\DTO\EpisodeDTOBuilder;
-use App\Application\Series\Controller\SeriesController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -77,14 +77,14 @@ class EpisodeController extends BaseController
         $episode = $this->episodeByApiProvider->provideEpisodeByApi($episodeNumber, $serieId, $seasonNumber);
         $episode = $this->episodeDTOBuilder->build($episode, $serie);
 
-        $episodeSeen = SeriesController::TOSEE;
+        $episodeSeen = EpisodeHelper::TOSEE;
 
         $user = $this->getUser();
 
         if (!empty($user)) {
             $favorite = $this->favoriteRepository->getFavorite($user, $serieId);
             if (!empty($favorite)) {
-                $episodeSeen = $favorite->isEpisodeSeen($episode->getCode())? SeriesController::SEEN : SeriesController::TOSEE;
+                $episodeSeen = $favorite->isEpisodeSeen($episode->getCode())? EpisodeHelper::SEEN : EpisodeHelper::TOSEE;
             }
         }
 
