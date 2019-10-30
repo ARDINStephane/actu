@@ -248,9 +248,14 @@ class FavoriteController extends BaseController
             $seasonsDetails = $favorite->getSerie()->getSeasonsDetails();
             foreach ($seasonsDetails as $season) {
                 $fullSeason = $this->episodeHelper->getSeasonAllEpisodesCode($favorite, $season['number']);
+                $notSeenBySeason = $this->episodeHelper->getNotSeenEpisodesCode($favorite, $fullSeason);
+                if (empty($notSeenBySeason)) {
+                    continue;
+                }
                 $notSeenEpisodes[$season['number']] = $this->episodeHelper->getNotSeenEpisodesCode($favorite, $fullSeason);
             }
             $allFavorites[$favorite->getSerie()->getSlug()] = $notSeenEpisodes;
+            $notSeenEpisodes = [];
         }
 
         return $this->render('pages/list_episodes_seen.html.twig', [
