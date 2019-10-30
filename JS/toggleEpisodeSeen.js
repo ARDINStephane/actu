@@ -20,6 +20,12 @@ function onClickBtnSeen(event) {
                 seasonIcon.classList.replace('fa-check', 'fa-times');
             }
         })
+    }).catch(function (error) {
+        if (error.response.status === 403) {
+            window.location.reload();
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
     })
 }
 
