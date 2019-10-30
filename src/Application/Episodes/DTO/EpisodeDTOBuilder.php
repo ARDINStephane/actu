@@ -43,12 +43,13 @@ class EpisodeDTOBuilder
      */
     public function build(array $episode, array $serie): EpisodeCardDTO
     {
-        //dd($episode['seasons_details'][0]);
         $id = $episode['id'];
         $description= $episode['description'];
         $note = $episode['note'];
         $code = $episode['code'];
         $seen = false;
+        $seasonNumber = $episode['season'];
+        $episodeNumber = $episode['episode'];
 
         return new EpisodeCardDTO(
             $id,
@@ -56,7 +57,9 @@ class EpisodeDTOBuilder
             $description,
             $note,
             $code,
-            $seen
+            $seen,
+            $seasonNumber,
+            $episodeNumber
         );
     }
 }
