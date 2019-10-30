@@ -8,7 +8,7 @@ use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Episodes\Helpers\EpisodeHelper;
 use App\Application\Series\Controller\SeriesController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -104,14 +104,15 @@ class FavoriteController extends BaseController
     public function setEpisodeSeenStatus(string $episodeNumber, string $serieId, string $seasonNumber, Request $request): Response
     {
         $user = $this->checkConnectedUser();
-
-        $favorite = $this->favoriteRepository->getFavorite($user, $serieId);
-        if(!$favorite) {
-            $message = 'Veuillez ajouter la série dans les favoris';
-            $this->addFlash('danger',$message);
-
-            return $this->json(['message', $message], 403);
+        if ($user instanceof JsonResponse) {
+            return $user;
         }
+        $favorite = $this->checkFavorite($user, $serieId);
+        if ($favorite instanceof JsonResponse) {
+            return $favorite;
+        }
+
+        $favorite = $this->checkFavorite($user, $serieId);
 
         $episodeCode = $this->episodeHelper->buildEpisodeCode($seasonNumber, $episodeNumber);
         if ($favorite->isEpisodeSeen($episodeCode)) {
@@ -123,7 +124,8 @@ class FavoriteController extends BaseController
 
             return $this->json([
                 'message' => $message,
-                'seen' => ' A voir',
+                'seen' => SeriesController::TOSEE,
+                'seasonSeen' => SeriesController::SEEALL,
                 'oldClass' => 'fa-check',
                 'newClass' => 'fa-times'
             ], 200);
@@ -137,7 +139,8 @@ class FavoriteController extends BaseController
 
             return $this->json([
                 'message' => $message,
-                'seen' => ' Vu',
+                'seen' => SeriesController::SEEN,
+                'seasonSeen' => SeriesController::SEEALL,
                 'oldClass' => 'fa-times',
                 'newClass' => 'fa-check'
             ], 200);
@@ -159,5 +162,81 @@ class FavoriteController extends BaseController
         }
 
         return $user;
+    }
+
+    /**
+     * @param $user
+     * @param string $serieId
+     * @return \App\Application\Common\Entity\Favorite|\Symfony\Component\HttpFoundation\JsonResponse|null
+     */
+    protected function checkFavorite($user, string $serieId)
+    {
+        $favorite = $this->favoriteRepository->getFavorite($user, $serieId);
+
+        if(!$favorite) {
+            $message = 'Veuillez ajouter la série dans les favoris';
+            $this->addFlash('danger',$message);
+
+            return $this->json(['message', $message], 403);
+        }
+
+        return $favorite;
+    }
+
+    /**
+     * @Route("/season/seen/{serieId}/{seasonNumber}", name="set.season.seen.status")
+     * @param string $serieId
+     * @param string $seasonNumber
+     * @return \App\Application\Common\Entity\Favorite|object|JsonResponse|null
+     */
+    public function setSeasonSeenStatus(string $serieId, string $seasonNumber)
+    {
+        $seasonSeen = SeriesController::ALLSEEN;
+        $seasonRank = $seasonNumber - 1;
+
+        $user = $this->checkConnectedUser();
+        if ($user instanceof JsonResponse) {
+            return $user;
+        }
+        $favorite = $this->checkFavorite($user, $serieId);
+        if ($favorite instanceof JsonResponse) {
+            return $favorite;
+        }
+
+        $seasonDetails = $favorite->getSerie()->getSeasonsDetails();
+        for ($i = 1; $i <= $seasonDetails[$seasonRank]['episodes']; $i++) {
+            $episodeCode = $this->episodeHelper->buildEpisodeCode($seasonNumber, $i);
+            $episodes[] = $episodeCode;
+            if (!$favorite->isEpisodeSeen($episodeCode)) {
+                $seasonSeen = SeriesController::TOSEE;
+            };
+        }
+
+        if ($seasonSeen == SeriesController::TOSEE) {
+            $favorite->setAllEpisodesSeen($episodes);
+            $response = [
+                'message' => 'Serie vue',
+                'seasonSeen' => SeriesController::ALLSEEN,
+                'oldClass' => 'fa-times',
+                'newClass' => 'fa-check',
+                'episodeSeen' => SeriesController::SEEN,
+                'oldEpisodeClass' => 'fa-times',
+                'newEpisodeClass' => 'fa-check'
+            ];
+        } else {
+            $favorite->removeAllEpisodesSeen($episodes);
+            $response = [
+                'message' => 'Serie à voir',
+                'seasonSeen' => SeriesController::SEEALL,
+                'oldClass' => 'fa-check',
+                'newClass' => 'fa-times',
+                'episodeSeen' => SeriesController::TOSEE,
+                'oldEpisodeClass' => 'fa-check',
+                'newEpisodeClass' => 'fa-times'
+            ];
+        }
+        $this->favoriteRepository->save($favorite);
+
+        return $this->json($response, 200);
     }
 }
