@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+    {% block jumbotronc %}
+        <h1 class="display-3">A voir</h1>
+    {% endblock %}
+{% block body %}
+    {{  include('common/_flash_messages.html.twig') }}
+    <div class="container">
+        <div class="flex row">
+            {% for serieName, serie in  allFavorites %}
+                <div class="list-group-item list-group-item-warning list-serie">
+                    <div>{{ serieName }}</div>
+                    <div class="flex row">
+                        {% for seasonNumber, season in  serie %}
+                            <div class="list-group-item list-group-item-info list-serie ">
+                                <div class="">Saison {{ seasonNumber }}</div>
+                                <div class="list-group-item list-group-item-light list-serie">
+                                    {% for episode in  season %}
+                                        <div> {{ episode }}</div>
+                                    {%  endfor %}
+                                </div>
+                            </div>
+                        {%  endfor %}
+                    </div>
+                </div>
+            {%  endfor %}
+        </div>
+    </div>
+{% endblock %}
+
