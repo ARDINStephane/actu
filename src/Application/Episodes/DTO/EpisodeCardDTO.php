@@ -33,6 +33,14 @@ class EpisodeCardDTO
      * @var bool
      */
     private $seen;
+    /**
+     * @var string
+     */
+    private $seasonNumber;
+    /**
+     * @var string
+     */
+    private $episodeNumber;
 
     public function __construct(
         ?string $id,
@@ -40,7 +48,9 @@ class EpisodeCardDTO
         ?string $description,
         ?array $note,
         ?string $code,
-        bool $seen
+        bool $seen,
+        string $seasonNumber,
+        string $episodeNumber
     ) {
 
         $this->id = $id;
@@ -49,6 +59,8 @@ class EpisodeCardDTO
         $this->note = $note;
         $this->code = $code;
         $this->seen = $seen;
+        $this->seasonNumber = $seasonNumber;
+        $this->episodeNumber = $episodeNumber;
     }
 
     public function toArray(): array
@@ -60,6 +72,8 @@ class EpisodeCardDTO
             'note' => $this->note,
             'code' => $this->code,
             'seen' => $this->seen,
+            'seasonNumber' => $this->seasonNumber,
+            'episodeNumber' => $this->episodeNumber,
         ];
     }
 
@@ -168,6 +182,42 @@ class EpisodeCardDTO
     public function setSeen(bool $seen): EpisodeCardDTO
     {
         $this->seen = $seen;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSeasonNumber(): string
+    {
+        return $this->seasonNumber;
+    }
+
+    /**
+     * @param string $seasonNumber
+     * @return EpisodeCardDTO
+     */
+    public function setSeasonNumber(string $seasonNumber): EpisodeCardDTO
+    {
+        $this->seasonNumber = $seasonNumber;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEpisodeNumber(): string
+    {
+        return $this->episodeNumber;
+    }
+
+    /**
+     * @param string $episodeNumber
+     * @return EpisodeCardDTO
+     */
+    public function setEpisodeNumber(string $episodeNumber): EpisodeCardDTO
+    {
+        $this->episodeNumber = $episodeNumber;
         return $this;
     }
 

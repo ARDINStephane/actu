@@ -68,6 +68,18 @@ interface Favorite
     public function getEpisodesSeen(): ?array;
 
     /**
+     * @param array $episodesSeen
+     * @return Favorite
+     */
+    public function setAllEpisodesSeen(array $episodesSeen): Favorite;
+
+    /**
+     * @param array $episodesSeen
+     * @return Favorite
+     */
+    public function removeAllEpisodesSeen(array $episodesSeen): Favorite;
+
+    /**
      * @param string $episodeCode
      * @return Favorite
      */

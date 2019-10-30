@@ -186,6 +186,36 @@ class DoctrineFavorite implements Favorite
     }
 
     /**
+     * @param array $episodesSeen
+     * @return Favorite
+     */
+    public function setAllEpisodesSeen(array $episodesSeen): Favorite
+    {
+        foreach ($episodesSeen as $episodeSeen) {
+            if (!$this->isEpisodeSeen($episodeSeen)) {
+                $this->addEpisodesSeen($episodeSeen);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param array $episodesSeen
+     * @return Favorite
+     */
+    public function removeAllEpisodesSeen(array $episodesSeen): Favorite
+    {
+        foreach ($episodesSeen as $episodeSeen) {
+            if ($this->isEpisodeSeen($episodeSeen)) {
+                $this->removeEpisodesSeen($episodeSeen);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $episodeCode
      * @return bool
      */

@@ -9,6 +9,7 @@
 require('../css/app.css');
 require('../../JS/toggleEpisodeSeen');
 require('../../JS/toggleFavorite');
+require('../../JS/toggleSeasonSeen');
 // Need jQuery? Install it with "yarn add jquery", then uncomment to require it.
 // const $ = require('jquery');
 

@@ -58,7 +58,7 @@ class SearchController extends BaseController
         return $this->render('pages/home.html.twig', [
             'series' => $series,
             'search' => $search,
-            'current_menu' => SeriesController::Home,
+            'current_menu' => SeriesController::HOME,
             'form' => $form->createView()
         ]);
     }

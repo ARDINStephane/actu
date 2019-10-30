@@ -27,8 +27,12 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SeriesController extends BaseController
 {
-    const Home = "home";
-    const User = "user";
+    const HOME = "home";
+    const USER = "user";
+    const TOSEE = " A voir";
+    const SEEALL = " Tout voir";
+    const SEEN = " Vu";
+    const ALLSEEN = " Tout vu";
     /**
      * @var SerieByApiProvider
      */
@@ -113,7 +117,7 @@ class SeriesController extends BaseController
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,
-            'current_menu' => self::Home,
+            'current_menu' => self::HOME,
             'form' => $form->createView()
         ]);
     }
@@ -193,7 +197,7 @@ class SeriesController extends BaseController
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,
-            'current_menu' => self::User,
+            'current_menu' => self::USER,
             'form' => $form->createView()
         ]);
     }
@@ -210,6 +214,7 @@ class SeriesController extends BaseController
 
         foreach ($serieCardDTO->getSeasonsDetails() as $season) {
             $seasonNumber = $season['number'];
+            $seasonSeen = self::ALLSEEN;
 
             for ($i = 1; $i <= $season['episodes']; $i++) {
                 $episodeCode = $this->episodeHelper->buildEpisodeCode($seasonNumber, $i);
@@ -218,22 +223,26 @@ class SeriesController extends BaseController
                     'season' => $seasonNumber,
                     'episode' => $i,
                     'code' => $episodeCode,
-                    'seen' => ' A voir'
+                    'seen' => self::TOSEE
                 ];
 
                 if(!empty($favorite)) {
                     $checkSeen = $favorite->isEpisodeSeen($episodeCode);
                     if ($checkSeen) {
-                        $seen = ' Vu';
+                        $seen = self::SEEN;
                     } else {
-                        $seen = ' A voir';
+                        $seen = self::TOSEE;
+                        $seasonSeen = self::SEEALL;
                     }
                     $episode['seen'] = $seen;
                 }
 
                 $serie['seasons'][$seasonNumber][] = $episode;
             }
+            $serie['seasons'][$seasonNumber][0]['seasonNumber'] = $seasonNumber;
+            $serie['seasons'][$seasonNumber][0]['seasonSeen'] = $seasonSeen;
         }
+
         return $serie;
     }
 }
