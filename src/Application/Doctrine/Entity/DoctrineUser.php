@@ -42,6 +42,13 @@ class DoctrineUser implements UserInterface, User
      */
     private $roles;
 
+    /**
+     * @var string | null
+     * @Assert\NotBlank()
+     * @Assert\Email()
+     */
+    private $email;
+
     public function __construct()
     {
         $this->favorites = new ArrayCollection();
@@ -221,4 +228,23 @@ class DoctrineUser implements UserInterface, User
     {
         return (string) $this->getId();
     }
+
+    /**
+     * @return string|null
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string|null $email
+     * @return User
+     */
+    public function setEmail(?string $email): User
+    {
+        $this->email = $email;
+        return $this;
+    }
+
 }

@@ -35,6 +35,8 @@ security:
     access_control:
         - { path: ^/toggle.favorite, roles: ROLE_USER}
         - { path: ^/serie.favorites, roles: ROLE_USER}
+        - { path: ^/favorites, roles: ROLE_USER}
+        - { path: ^/season, roles: ROLE_USER}
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY}
 
     encoders:

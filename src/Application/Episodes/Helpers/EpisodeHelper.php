@@ -5,6 +5,7 @@ namespace App\Application\Episodes\Helpers;
 use App\Application\Common\Entity\Favorite;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Series\DTO\SerieCardDTO;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class EpisodesHelper
@@ -12,19 +13,21 @@ use App\Application\Series\DTO\SerieCardDTO;
  */
 class EpisodeHelper
 {
-    const TOSEE = " A voir";
-    const SEEALL = " Tout voir";
-    const SEEN = " Vu";
-    const ALLSEEN = " Tout vu";
     /**
      * @var FavoriteRepository
      */
     private $favoriteRepository;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     public function __construct(
-        FavoriteRepository $favoriteRepository
+        FavoriteRepository $favoriteRepository, TranslatorInterface $translator
     ) {
         $this->favoriteRepository = $favoriteRepository;
+        $this->translator = $translator;
+
     }
 
     /**
@@ -95,9 +98,9 @@ class EpisodeHelper
         foreach ($serieCardDTO->getSeasonsDetails() as $season) {
             $seasonNumber = $season['number'];
 
-            $seasonSeen = self::ALLSEEN;
+            $seasonSeen = $this->translator->trans('episode.allSeen');
             if (empty($favorite)) {
-                $seasonSeen = self::SEEALL;
+                $seasonSeen = $this->translator->trans('episode.seeAll');
             }
 
             for ($i = 1; $i <= $season['episodes']; $i++) {
@@ -107,16 +110,16 @@ class EpisodeHelper
                     'season' => $seasonNumber,
                     'episode' => $i,
                     'code' => $episodeCode,
-                    'seen' => self::TOSEE
+                    'seen' => $this->translator->trans('episode.toSee')
                 ];
-
+                $this->translator->trans('episode.toSee');
                 if(!empty($favorite)) {
                     $checkSeen = $favorite->isEpisodeSeen($episodeCode);
                     if ($checkSeen) {
-                        $seen = self::SEEN;
+                        $seen = $this->translator->trans('episode.seen');
                     } else {
-                        $seen = self::TOSEE;
-                        $seasonSeen = self::SEEALL;
+                        $seen = $this->translator->trans('episode.toSee');
+                        $seasonSeen = $this->translator->trans('episode.seeAll');
                     }
                     $episode['seen'] = $seen;
                 }

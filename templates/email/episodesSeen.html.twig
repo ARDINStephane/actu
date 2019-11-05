@@ -1,0 +1,20 @@
+<div xmlns="http://www.w3.org/1999/html">
+    {{ 'mail.hello' | trans }} {{ user.username }}
+</div>
+{% for serieName, serie in  allFavorites %}
+    <div>========== {{ serieName }} ==========</div>
+    <div>
+        {% for seasonNumber, season in  serie %}
+            <div>
+                <div>
+                    {% for episode in  season %}
+                        <div> {{ episode }}</div>
+                    {%  endfor %}
+                </div>
+            </div>
+        {%  endfor %}
+    </div>
+{%  endfor %}
+<div>
+    <a href="{{ url('serie.favorites') }}">{{ 'mail.favorites' | trans }}</a>
+</div>

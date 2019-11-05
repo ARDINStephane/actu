@@ -5,12 +5,12 @@
         </h5>
         <img src="{{ serie.images.show }}" alt="card-img-top" style="width: 100%; height:auto;">
         <div id="description">
-            <p class="card-text" id="collapseDescription">{{ serie.description }})</p>
+            <p class="card-text" id="collapseDescription">{{ serie.description }}</p>
         </div>
-        <div class="text-primary">Nombre de saisons: {{ serie.numberOfSeasons }}</div>
-        <div class="text-primary">Nombre dépisodes: {{ serie.numberOfEpisodes }}</div>
+        <div class="text-primary">{{ 'serie.seasonsNumber' | trans }} : {{ serie.numberOfSeasons }}</div>
+        <div class="text-primary">{{ 'serie.episodeNumber' | trans }} : {{ serie.numberOfEpisodes }}</div>
         {% if is_granted('ROLE_USER') %}
-            <div class="text-primary">Dernier dépisode: {{ serie.lastEpisode }}</div>
+            <div class="text-primary">{{ 'serie.lastEpisode' | trans }} : {{ serie.lastEpisode }}</div>
             <a class="js-toggle-favorites" href={{ path('toggle.favorite', {'id': serie.id}) }}>
                 <span class="js-toggle-favorite js-toggle-favorite btn
                     {% if serie.isfavorite == false %}
@@ -20,9 +20,9 @@
                     {% endif %}"
                 >
                     {% if serie.isfavorite == false %}
-                        Ajouter en favori
+                        {{ 'serie.addToFavorite' | trans }}
                     {% else %}
-                        Supprimer des favoris
+                        {{ 'serie.removeFromFaforite' | trans }}
                     {% endif %}
                 </span>
             </a>
