@@ -16,6 +16,9 @@ App\Application\Doctrine\Entity\DoctrineUser:
     roles:
       type: array
       default: 'ROLE_USER'
+    email:
+      type: string
+      length: 255
   oneToMany:
     favorites:
       targetEntity: DoctrineFavorite

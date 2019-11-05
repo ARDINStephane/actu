@@ -113,4 +113,15 @@ interface User
      * @return User
      */
     public function removeFavorite(Favorite $favorite): User;
+
+    /**
+     * @return string|null
+     */
+    public function getEmail(): ?string;
+
+    /**
+     * @param string|null $email
+     * @return User
+     */
+    public function setEmail(?string $email): User;
 }

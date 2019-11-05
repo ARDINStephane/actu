@@ -4,7 +4,7 @@
             {% for season in serieDetails.seasons %}
                 <div class="list-group-item list-group-item-warning list-serie">
                 <a href="#" class="list-group-item-warning display-4 ">
-                    Saison {{ season.0.seasonNumber }}
+                    {{ 'home.season' | trans }} {{ season.0.seasonNumber }}
                 </a>
                 {% if is_granted('ROLE_USER') %}
                     <a class="btn btn-link js-seasons-seens"
@@ -13,7 +13,7 @@
                         'seasonNumber': season.0.seasonNumber,
                     }) }}
                     >
-                        {% if season.0.seasonSeen == ' Tout voir'%}
+                        {% if season.0.seasonSeen == 'episode.seeAll'|trans %}
                             <i class="fas fa-times js-season-seens js-season-seens-{{ season.0.seasonNumber }}" >{{ season.0.seasonSeen }}</i>
                         {% else %}
                             <i class="fas fa-check js-season-seens js-season-seens-{{ season.0.seasonNumber }}">{{ season.0.seasonSeen }}</i>
@@ -32,7 +32,7 @@
                                 'seasonNumber': episode.season
                            }) }}
                         >
-                            Episode {{ episode.episode }}
+                            {{ 'home.episode' | trans }} {{ episode.episode }}
                         </a>
                         {% if is_granted('ROLE_USER') %}
                             <a class="btn btn-link js-seens" href={{ path('set.episode.seen.status', {
@@ -41,7 +41,7 @@
                                 'seasonNumber': episode.season
                             }) }}
                                 >
-                                {% if episode.seen == ' A voir'%}
+                                {% if episode.seen ==  'episode.toSee' | trans %}
                                     <i class="fas fa-times js-seen js-seen-{{ episode.season }}">{{ episode.seen }}</i>
                                 {% else %}
                                     <i class="fas fa-check js-seen js-seen-{{ episode.season }}"> {{ episode.seen }}</i>

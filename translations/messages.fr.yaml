@@ -1,0 +1,42 @@
+base:
+  title: Bienvenue !
+  home: Home
+  profile: Mon profil
+  favorites: Mes favoris
+  jumbotron: Il est génial ce site
+
+home:
+  title: Les séries les plus populaires
+  season: Saison
+  episode: Episode
+
+mail:
+  hello: Bonjour
+  favorites: Mes favoris
+  send: Envoyer par mail
+
+episode:
+  toSee: ' A voir'
+  seeAll: ' Tout voir'
+  seen: ' Vu'
+  allSeen: ' Tout vu'
+
+search:
+  search: Rechercher
+
+security:
+  login: Se connecter
+  form:
+    userName: Nom d'utilisateur
+    password: Mot de passe
+  logout: Se déconnecter
+
+serie:
+  seasonsNumber: Nombre de saisons
+  episodeNumber: Nombre d'épisodes
+  lastEpisode: Dernier dépisode
+  addToFavorite: Ajouter en favori
+  removeFromFaforite: Supprimer des favoris
+
+
+

@@ -7,12 +7,14 @@ use App\Application\Common\Controller\BaseController;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Episodes\Helpers\EpisodeHelper;
+use App\Application\Notification\NotSeenNotification;
 use App\Application\Search\Controller\SearchController;
 use App\Application\Series\Controller\SeriesController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 /**
@@ -41,19 +43,31 @@ class FavoriteController extends BaseController
      * @var SearchController
      */
     private $searchController;
+    /**
+     * @var NotSeenNotification
+     */
+    private $notSeenNotification;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     public function __construct(
         SerieRepository $serieRepository,
         FavoriteRepository $favoriteRepository,
         SeriesController $seriesController,
         EpisodeHelper $episodeHelper,
-        SearchController $searchController
+        SearchController $searchController,
+        NotSeenNotification $notSeenNotification,
+        TranslatorInterface $translator
     ) {
         $this->serieRepository = $serieRepository;
         $this->favoriteRepository = $favoriteRepository;
         $this->seriesController = $seriesController;
         $this->episodeHelper = $episodeHelper;
         $this->searchController = $searchController;
+        $this->notSeenNotification = $notSeenNotification;
+        $this->translator = $translator;
     }
 
     /**
@@ -130,8 +144,8 @@ class FavoriteController extends BaseController
 
             return $this->json([
                 'message' => $message,
-                'seen' => EpisodeHelper::TOSEE,
-                'seasonSeen' => EpisodeHelper::SEEALL,
+                'seen' => $this->translator->trans('episode.toSee'),
+                'seasonSeen' => $this->translator->trans('episode.seeAll'),
                 'oldClass' => 'fa-check',
                 'newClass' => 'fa-times'
             ], 200);
@@ -139,14 +153,14 @@ class FavoriteController extends BaseController
 
             $favorite->addEpisodesSeen($episodeCode);
 
-            $message = 'Episode ' . $episodeCode . EpisodeHelper::SEEN;
+            $message = 'Episode ' . $episodeCode . $this->translator->trans('episode.seen');
 
             $this->favoriteRepository->save($favorite);
 
             return $this->json([
                 'message' => $message,
-                'seen' => EpisodeHelper::SEEN,
-                'seasonSeen' => EpisodeHelper::SEEALL,
+                'seen' => $this->translator->trans('episode.seen'),
+                'seasonSeen' => $this->translator->trans('episode.seeAll'),
                 'oldClass' => 'fa-times',
                 'newClass' => 'fa-check'
             ], 200);
@@ -211,10 +225,10 @@ class FavoriteController extends BaseController
             $favorite->setAllEpisodesSeen($episodes);
             $response = [
                 'message' => 'Serie vue',
-                'seasonSeen' => EpisodeHelper::ALLSEEN,
+                'seasonSeen' => $this->translator->trans('episode.allSeen'),
                 'oldClass' => 'fa-times',
                 'newClass' => 'fa-check',
-                'episodeSeen' => EpisodeHelper::SEEN,
+                'episodeSeen' => $this->translator->trans('episode.seen'),
                 'oldEpisodeClass' => 'fa-times',
                 'newEpisodeClass' => 'fa-check'
             ];
@@ -222,10 +236,10 @@ class FavoriteController extends BaseController
             $favorite->removeAllEpisodesSeen($episodes);
             $response = [
                 'message' => 'Serie à voir',
-                'seasonSeen' => EpisodeHelper::SEEALL,
+                'seasonSeen' => $this->translator->trans('episode.seeAll'),
                 'oldClass' => 'fa-check',
                 'newClass' => 'fa-times',
-                'episodeSeen' => EpisodeHelper::TOSEE,
+                'episodeSeen' => $this->translator->trans('episode.toSee'),
                 'oldEpisodeClass' => 'fa-check',
                 'newEpisodeClass' => 'fa-times'
             ];
@@ -236,14 +250,16 @@ class FavoriteController extends BaseController
     }
 
     /**
-     * @Route("/favorites/notSeen", name="favorite.not.seen")
+     * @Route("/favorites/notSeen/{sendByEmail}", name="favorite.not.seen", defaults={"sendByEmail": false})
      */
-    public function getAllEpisodeToSee(Request $request)
+    public function getAllEpisodeToSee(Request $request, bool $sendByEmail = false)
     {
         $form = $this->searchController->handleForm($request);
 
         $allFavorites = [];
-        $favorites = $this->getUser()->getFavorites();
+        $user = $this->getUser();
+
+        $favorites = $user->getFavorites();
         foreach ($favorites as $favorite){
             $seasonsDetails = $favorite->getSerie()->getSeasonsDetails();
             foreach ($seasonsDetails as $season) {
@@ -254,8 +270,15 @@ class FavoriteController extends BaseController
                 }
                 $notSeenEpisodes[$season['number']] = $this->episodeHelper->getNotSeenEpisodesCode($favorite, $fullSeason);
             }
+            if (empty($notSeenEpisodes)) {
+                continue;
+            }
             $allFavorites[$favorite->getSerie()->getSlug()] = $notSeenEpisodes;
             $notSeenEpisodes = [];
+        }
+
+        if($sendByEmail) {
+            $this->notSeenNotification->sendNotSeenEpisode($allFavorites, $user);
         }
 
         return $this->render('pages/list_episodes_seen.html.twig', [

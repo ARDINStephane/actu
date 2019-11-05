@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Welcome!{% endblock %}</title>
+    <title>{% block title %}{{ 'base.title' | trans }}!{% endblock %}</title>
     <link rel="icon" type="image/png" href="/favicon.png"/>
     <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -20,7 +20,7 @@
                     active
                 {% endif %}"
                href={{ path('home.index') }}>
-                    Home
+                {{ 'base.home' | trans }}
             </a>
         </li>
     </ul>
@@ -39,24 +39,24 @@
                            data-toggle="dropdown"
                            aria-haspopup="true"
                            aria-expanded="false">
-                                Mon profil
+                            {{ 'base.profile' | trans }}
                         </a>
 
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href={{ path('serie.favorites') }}>Mes Favoris</a>
-                            <a class="dropdown-item" href={{ path('favorite.not.seen') }}>A voir</a>
+                            <a class="dropdown-item" href={{ path('serie.favorites') }}>{{ 'base.favorites' | trans }}</a>
+                            <a class="dropdown-item" href={{ path('favorite.not.seen') }}>{{ 'episode.toSee' | trans }}</a>
                         </div>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href={{ path('logout') }}>Se déconnecter</a>
+                    <a class="nav-link" href={{ path('logout') }}>{{ 'security.logout' | trans }}</a>
                 </li>
             </ul>
         {% endif %}
         {% if not app.user %}
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href={{ path('login') }}>Se Connecter</a>
+                    <a class="nav-link" href={{ path('login') }}>{{ 'security.login' | trans }}</a>
                 </li>
             </ul>
         {% endif %}
@@ -64,7 +64,7 @@
 </nav>
 <div class="jumbotron text-center">
     {% block jumbotronc %}
-        <h1 class="display-4">Il est génial ce site</h1>
+        <h1 class="display-4">{{ 'base.jumbotron' | trans }}</h1>
     {% endblock %}
 
     {% block search %}
