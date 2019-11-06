@@ -2,6 +2,7 @@
 
 namespace App\Application\Episodes\Helpers;
 
+use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
 use App\Application\Common\Entity\Favorite;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Series\DTO\SerieCardDTO;
@@ -21,13 +22,19 @@ class EpisodeHelper
      * @var TranslatorInterface
      */
     private $translator;
+    /**
+     * @var SerieByApiProvider
+     */
+    private $serieByApiProvider;
 
     public function __construct(
-        FavoriteRepository $favoriteRepository, TranslatorInterface $translator
+        FavoriteRepository $favoriteRepository, TranslatorInterface $translator,
+        SerieByApiProvider $serieByApiProvider
     ) {
         $this->favoriteRepository = $favoriteRepository;
         $this->translator = $translator;
 
+        $this->serieByApiProvider = $serieByApiProvider;
     }
 
     /**
@@ -52,12 +59,11 @@ class EpisodeHelper
      * @param string $seasonNumber
      * @return array
      */
-    public function getSeasonAllEpisodesCode(Favorite $favorite, string $seasonNumber): array
+    public function getSeasonAllEpisodesCode(Array $seasonDetails, string $seasonNumber): array
     {
         $seasonRank = $seasonNumber - 1;
         $episodes = [];
 
-        $seasonDetails = $favorite->getSerie()->getSeasonsDetails();
         for ($i = 1; $i <= $seasonDetails[$seasonRank]['episodes']; $i++) {
             $episodeCode = $this->buildEpisodeCode($seasonNumber, $i);
             $episodes[] = $episodeCode;
