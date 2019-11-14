@@ -54,6 +54,7 @@ class SearchController extends BaseController
 
         $betaseries = $this->serieByApiProvider->searchSerie($search);
         $series = $this->paginator->paginateSeries($betaseries, $request, SerieDTOBuilder::Search);
+        //dd($series);
 
         return $this->render('pages/home.html.twig', [
             'series' => $series,

@@ -6,3 +6,6 @@ parameters:
     locale: 'fr'
     base_url: 'http://localhost:8000'
     clientId: '%env(CLIENT_ID)%'
+    apikey: '%env(API_KEY)%'
+    userkey: '%env(USER_KEY)%'
+    username: '%env(USERNAME)%'

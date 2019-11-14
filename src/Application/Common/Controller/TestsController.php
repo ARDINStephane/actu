@@ -5,6 +5,7 @@ namespace App\Application\Common\Controller;
 
 use App\Api\BetaseriesApi\Login\BetaseriesLoger;
 use App\Api\BetaseriesApi\Login\TokenManager;
+use App\Api\TheTvDbApi\Login\TheTvDbApiLogger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,8 +28,11 @@ class TestsController extends BaseController
      * @Route("/test", name="test.index")
      * @return Response
      */
-    public function index(): Response
+    public function index(TheTvDbApiLogger $apiLogger): Response
     {
+        $apiLogger->loginToGetToken();
+        //$apiLogger->refreshToken();
+
         return $this->render('test/test.html.twig',[
             'yes' =>$this->yes,
             'cool' => $this->cool
