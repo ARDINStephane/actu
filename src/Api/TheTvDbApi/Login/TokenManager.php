@@ -29,9 +29,9 @@ class TokenManager
     }
 
     /**
-     * @param AccessTokenInterface $token
+     * @param string $token
      */
-    public function set(AccessTokenInterface $token): void
+    public function set(string $token): void
     {
         $this->session->set(self::KEY , $token);
     }
@@ -39,7 +39,7 @@ class TokenManager
     /**
      * @return AccessTokenInterface|null
      */
-    public function get(): ?AccessTokenInterface
+    public function get(): ?string
     {
         return $this->session->get(self::KEY);
     }
