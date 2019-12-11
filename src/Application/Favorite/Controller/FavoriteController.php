@@ -3,15 +3,20 @@
 namespace App\Application\Favorite\Controller;
 
 
+use App\Api\BetaseriesApi\Provider\SerieByApiProvider;
 use App\Application\Common\Controller\BaseController;
+use App\Application\Common\Entity\Favorite;
 use App\Application\Common\Repository\FavoriteRepository;
 use App\Application\Common\Repository\SerieRepository;
 use App\Application\Episodes\Helpers\EpisodeHelper;
+use App\Application\Notification\NotSeenNotification;
+use App\Application\Search\Controller\SearchController;
 use App\Application\Series\Controller\SeriesController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 /**
@@ -29,24 +34,48 @@ class FavoriteController extends BaseController
      */
     private $favoriteRepository;
     /**
-     * @var SeriesController
+     * @var EpisodeHelper
      */
     private $seriesController;
     /**
      * @var EpisodeHelper
      */
     private $episodeHelper;
+    /**
+     * @var SearchController
+     */
+    private $searchController;
+    /**
+     * @var NotSeenNotification
+     */
+    private $notSeenNotification;
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+    /**
+     * @var SerieByApiProvider
+     */
+    private $serieByApiProvider;
 
     public function __construct(
         SerieRepository $serieRepository,
         FavoriteRepository $favoriteRepository,
         SeriesController $seriesController,
-        EpisodeHelper $episodeHelper
+        EpisodeHelper $episodeHelper,
+        SearchController $searchController,
+        NotSeenNotification $notSeenNotification,
+        TranslatorInterface $translator,
+        SerieByApiProvider $serieByApiProvider
     ) {
         $this->serieRepository = $serieRepository;
         $this->favoriteRepository = $favoriteRepository;
         $this->seriesController = $seriesController;
         $this->episodeHelper = $episodeHelper;
+        $this->searchController = $searchController;
+        $this->notSeenNotification = $notSeenNotification;
+        $this->translator = $translator;
+        $this->serieByApiProvider = $serieByApiProvider;
     }
 
     /**
@@ -79,7 +108,6 @@ class FavoriteController extends BaseController
         } else {
             $favorite->removeFromAssociations($user, $serie);
             $this->favoriteRepository->delete($favorite->getId());
-
             if(count($serie->getFavorites()) == 0) {
                 $this->seriesController->delete($id);
             }
@@ -124,8 +152,8 @@ class FavoriteController extends BaseController
 
             return $this->json([
                 'message' => $message,
-                'seen' => SeriesController::TOSEE,
-                'seasonSeen' => SeriesController::SEEALL,
+                'seen' => $this->translator->trans('episode.toSee'),
+                'seasonSeen' => $this->translator->trans('episode.seeAll'),
                 'oldClass' => 'fa-check',
                 'newClass' => 'fa-times'
             ], 200);
@@ -133,14 +161,14 @@ class FavoriteController extends BaseController
 
             $favorite->addEpisodesSeen($episodeCode);
 
-            $message = 'Episode ' . $episodeCode . ' vu';
+            $message = 'Episode ' . $episodeCode . $this->translator->trans('episode.seen');
 
             $this->favoriteRepository->save($favorite);
 
             return $this->json([
                 'message' => $message,
-                'seen' => SeriesController::SEEN,
-                'seasonSeen' => SeriesController::SEEALL,
+                'seen' => $this->translator->trans('episode.seen'),
+                'seasonSeen' => $this->translator->trans('episode.seeAll'),
                 'oldClass' => 'fa-times',
                 'newClass' => 'fa-check'
             ], 200);
@@ -191,9 +219,6 @@ class FavoriteController extends BaseController
      */
     public function setSeasonSeenStatus(string $serieId, string $seasonNumber)
     {
-        $seasonSeen = SeriesController::ALLSEEN;
-        $seasonRank = $seasonNumber - 1;
-
         $user = $this->checkConnectedUser();
         if ($user instanceof JsonResponse) {
             return $user;
@@ -203,23 +228,16 @@ class FavoriteController extends BaseController
             return $favorite;
         }
 
-        $seasonDetails = $favorite->getSerie()->getSeasonsDetails();
-        for ($i = 1; $i <= $seasonDetails[$seasonRank]['episodes']; $i++) {
-            $episodeCode = $this->episodeHelper->buildEpisodeCode($seasonNumber, $i);
-            $episodes[] = $episodeCode;
-            if (!$favorite->isEpisodeSeen($episodeCode)) {
-                $seasonSeen = SeriesController::TOSEE;
-            };
-        }
-
-        if ($seasonSeen == SeriesController::TOSEE) {
+        $seasonDetails = $this->getSeasonDetailsByApi($favorite);
+        $episodes = $this->episodeHelper->getSeasonAllEpisodesCode($seasonDetails, $seasonNumber);
+        if(count($this->episodeHelper->getNotSeenEpisodesCode($favorite, $episodes)) != 0) {
             $favorite->setAllEpisodesSeen($episodes);
             $response = [
                 'message' => 'Serie vue',
-                'seasonSeen' => SeriesController::ALLSEEN,
+                'seasonSeen' => $this->translator->trans('episode.allSeen'),
                 'oldClass' => 'fa-times',
                 'newClass' => 'fa-check',
-                'episodeSeen' => SeriesController::SEEN,
+                'episodeSeen' => $this->translator->trans('episode.seen'),
                 'oldEpisodeClass' => 'fa-times',
                 'newEpisodeClass' => 'fa-check'
             ];
@@ -227,10 +245,10 @@ class FavoriteController extends BaseController
             $favorite->removeAllEpisodesSeen($episodes);
             $response = [
                 'message' => 'Serie à voir',
-                'seasonSeen' => SeriesController::SEEALL,
+                'seasonSeen' => $this->translator->trans('episode.seeAll'),
                 'oldClass' => 'fa-check',
                 'newClass' => 'fa-times',
-                'episodeSeen' => SeriesController::TOSEE,
+                'episodeSeen' => $this->translator->trans('episode.toSee'),
                 'oldEpisodeClass' => 'fa-check',
                 'newEpisodeClass' => 'fa-times'
             ];
@@ -238,5 +256,63 @@ class FavoriteController extends BaseController
         $this->favoriteRepository->save($favorite);
 
         return $this->json($response, 200);
+    }
+
+    /**
+     * @Route("/favorites/notSeen/{sendByEmail}", name="favorite.not.seen", defaults={"sendByEmail": false})
+     */
+    public function getAllEpisodeToSee(Request $request, bool $sendByEmail = false)
+    {
+        $form = $this->searchController->handleForm($request);
+
+        $allFavorites = [];
+        $user = $this->getUser();
+
+        $favorites = $user->getFavorites();
+        foreach ($favorites as $favorite){
+            $seasonsDetails = $this->getSeasonDetailsByApi($favorite);
+
+            foreach ($seasonsDetails as $season) {
+                $fullSeason = $this->episodeHelper->getSeasonAllEpisodesCode($seasonsDetails, $season['number']);
+                $notSeenBySeason = $this->episodeHelper->getNotSeenEpisodesCode($favorite, $fullSeason);
+                if (empty($notSeenBySeason)) {
+                    continue;
+                }
+                $notSeenEpisodes[$season['number']] = $this->episodeHelper->getNotSeenEpisodesCode($favorite, $fullSeason);
+            }
+            if (empty($notSeenEpisodes)) {
+                continue;
+            }
+            $allFavorites[$favorite->getSerie()->getSlug()] = $notSeenEpisodes;
+            $notSeenEpisodes = [];
+        }
+
+        if($sendByEmail) {
+            $this->notSeenNotification->sendNotSeenEpisode($allFavorites, $user);
+        }
+
+        return $this->render('pages/list_episodes_seen.html.twig', [
+            'allFavorites' => $allFavorites,
+            'form' => $form->createView(),
+            'current_menu' =>SeriesController::USER
+        ]);
+    }
+
+    /**
+     * @param Favorite $favorite
+     * @return array
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    protected function getSeasonDetailsByApi(Favorite $favorite): array
+    {
+        //$seasonDetails = $favorite->getSerie()->getSeasonsDetails();
+        $serieId = $favorite->getSerie()->getId();
+        $serieByApi = $this->serieByApiProvider->provideSerieByApi($serieId);
+        $seasonsDetails = $serieByApi['seasons_details'];
+
+        return $seasonsDetails;
     }
 }

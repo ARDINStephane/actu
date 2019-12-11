@@ -54,7 +54,7 @@ class SerieDTOBuilder
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function switchAndBuildSerieInfo($serie, string $tag): SerieCardDTO
+    public function switchAndBuildSerieInfo($serie, string $tag): ?SerieCardDTO
     {
         switch ($tag) {
             case self::Index:
@@ -77,9 +77,12 @@ class SerieDTOBuilder
      * @param array $serie
      * @return SerieCardDTO
      */
-    protected function build(array $serie): SerieCardDTO
+    protected function build(array $serie): ?SerieCardDTO
     {
-        //dd($serie['seasons_details'][0]);
+        if(empty($serie['seasons_details'])) {
+            return null;
+        }
+
         $id = $serie['id'];
         $title= $serie['original_title'];
         $slug = $this->slugify($title);

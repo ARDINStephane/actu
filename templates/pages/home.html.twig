@@ -1,6 +1,10 @@
 {% extends 'base.html.twig' %}
     {% block jumbotronc %}
-        <h1 class="display-4">Les séries les plus populaires</h1>
+        {% if current_menu == constant('App\\Application\\Series\\Controller\\SeriesController::HOME') %}
+            <h1 class="display-4">{{ 'home.title' | trans }}</h1>
+        {% elseif current_menu == constant('App\\Application\\Series\\Controller\\SeriesController::USER') %}
+            <h1 class="display-4">{{ 'base.favorites' | trans }}</h1>
+        {% endif %}
     {% endblock %}
 {% block body %}
     <div class="container">

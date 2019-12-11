@@ -36,8 +36,12 @@ class Paginator
         $paginated = [];
 
         foreach ($series as $serie) {
-            $paginated[] = $this->serieDTOBuilder->switchAndBuildSerieInfo($serie, $tag);
+            $serieDto = $this->serieDTOBuilder->switchAndBuildSerieInfo($serie, $tag);
+            if(isset($serieDto)) {
+                $paginated[] = $serieDto;
+            }
         }
+
         $paginated = $this->paginator->paginate(
             $paginated,
             $request->query->getInt('page', 1),
