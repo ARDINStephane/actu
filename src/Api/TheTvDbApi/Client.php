@@ -12,7 +12,7 @@ use Symfony\Component\HttpClient\Response\CurlResponse;
 class Client
 {
     const POSTMethod = 'POST';
-    const GETTMethod = 'GET';
+    const GETMethod = 'GET';
     const API_BASE_URI = 'https://api.thetvdb.com';
     /**
      * @type HttpClient
@@ -117,13 +117,13 @@ class Client
         $response = $this->performApiCall($method, $path, $options);
         if ($response->getStatusCode() === 200) {
             try {
-                $contents = $response->getContent();
+                $contents = $response->toArray();
             } catch (\RuntimeException $e) {
                 $contents = '';
                 throw new Exception('informations non récupérées');
             }
 
-            return json_decode($contents, true);
+            return $contents;
         } else {
             throw new Exception(
                 sprintf(

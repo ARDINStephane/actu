@@ -23,9 +23,10 @@ class ApiProvider
         $this->client = $client;
     }
 
-    public function get()
+    public function search(string $path): array
     {
-        $json = $this->client->performApiCallWithJsonResponse(Client::GETTMethod, '/search/series?name=good%2Bdoctor');
-        dd($json);
+        $results = $this->client->performApiCallWithJsonResponse(Client::GETMethod, $path);
+
+        return end($results['data']);
     }
 }

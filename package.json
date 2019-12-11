@@ -15,6 +15,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "serialize-javascript": "^2.1.2",
         "styled-jsx": "^3.2.2"
     }
 }

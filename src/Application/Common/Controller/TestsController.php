@@ -31,7 +31,9 @@ class TestsController extends BaseController
      */
     public function index(TokenManager $tokenManager, ApiProvider $apiProvider): Response
     {
-        $apiProvider->get();
+        //$results = $apiProvider->search('/search/series?name=good%2Bdoctor');
+        $results = $apiProvider->search('/series/328634/episodes');
+dd($results);
 
         return $this->render('test/test.html.twig',[
             'yes' =>$this->yes,
