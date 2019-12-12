@@ -5,7 +5,7 @@ namespace App\Application\Doctrine\Repository;
 use App\Application\Common\Repository\BaseRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
  * Class DoctrineBaseRepository
@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 abstract class DoctrineBaseRepository extends ServiceEntityRepository implements BaseRepository
 {
     /**
-     * @var RegistryInterface
+     * @var ManagerRegistry
      */
     protected $registry;
     /** @var string */
@@ -27,7 +27,7 @@ abstract class DoctrineBaseRepository extends ServiceEntityRepository implements
      */
     public function saveBatch(array $List): void
     {
-        $em = $this->registry->getEntityManager();
+        $em = $this->registry->getManager();
 
         foreach ($List as $item) {
             $em->persist($item);
@@ -39,9 +39,9 @@ abstract class DoctrineBaseRepository extends ServiceEntityRepository implements
 
     /**
      * DoctrineBaseRepository constructor.
-     * @param RegistryInterface $registry
+     * @param ManagerRegistry $registry
      */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, $this->class);
         $this->registry = $registry;
@@ -64,7 +64,7 @@ abstract class DoctrineBaseRepository extends ServiceEntityRepository implements
      */
     public function save($object): void
     {
-        $em = $this->registry->getEntityManager();
+        $em = $this->registry->getManager();
 
         $em->persist($object);
         $em->flush();

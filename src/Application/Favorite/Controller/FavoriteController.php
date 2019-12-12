@@ -79,7 +79,7 @@ class FavoriteController extends BaseController
     }
 
     /**
-     * @Route("/toggle.favorite/{id}", name="toggle.favorite")
+     * @Route("/toggle/favorite/{id}", name="toggle.favorite")
      * @param string $id
      * @return Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
