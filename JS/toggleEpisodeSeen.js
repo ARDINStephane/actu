@@ -22,7 +22,7 @@ function onClickBtnSeen(event) {
         })
     }).catch(function (error) {
         if (error.response.status === 403) {
-            window.location.reload();
+            window.location.refresh();
             document.body.scrollTop = 0;
             document.documentElement.scrollTop = 0;
         }
